@@ -12,14 +12,49 @@ import { useSafeAreaInsets } from 'react-native-safe-area-context';
 import { C } from '../../constants/Colors';
 import { Card, Pill, Bar } from '../../components/UI';
 import Icon from '../../components/Icon';
+import {
+  LAST_7_DAYS,
+  TODAY_CHECKIN,
+  calcRiskScore,
+  calcAverages,
+} from '../../constants/mockData';
 
 export default function RiskScreen() {
   const router = useRouter();
   const insets = useSafeAreaInsets();
 
+  // ── Derived from mock data ─────────────────────────────
+  const riskToday = calcRiskScore(TODAY_CHECKIN);
+  const riskValues = LAST_7_DAYS.map(calcRiskScore).reverse(); // oldest→newest
+  const { avgSleep, avgStress } = calcAverages(LAST_7_DAYS);
+
+  const riskLabel =
+    riskToday < 35 ? 'Low Risk' : riskToday < 60 ? 'Moderate Risk' : 'High Risk';
+  const riskColor =
+    riskToday < 35 ? C.mint : riskToday < 60 ? C.amber : C.coral;
+  const riskColorLight =
+    riskToday < 35 ? C.mintLight : riskToday < 60 ? C.amberLight : C.coralLight;
+
+  const sleepImpactPct = Math.round((1 - avgSleep / 10) * 100);
+  const stressImpactPct = Math.round((avgStress / 10) * 100);
+
   const factors = [
-    { l: 'Sleep Quality', sub: 'Moderate Impact', c: C.purple, v: 55, i: 'moon', desc: 'Average 6.5h this week. Consistent sleep may lower risk.' },
-    { l: 'Workload', sub: 'High Intensity', c: C.coral, v: 85, i: 'bolt', desc: 'Elevated screen time detected during late hours.' },
+    {
+      l: 'Sleep Quality',
+      sub: avgSleep >= 7 ? 'Positive Factor' : 'Moderate Impact',
+      c: C.purple,
+      v: sleepImpactPct,
+      i: 'moon',
+      desc: `Avg sleep score ${avgSleep.toFixed(1)}/10 this week. ${avgSleep < 7 ? 'Try to sleep earlier to lower risk.' : 'Great sleep consistency keeps risk low.'}`,
+    },
+    {
+      l: 'Stress Level',
+      sub: avgStress >= 6 ? 'High Intensity' : 'Stable',
+      c: C.coral,
+      v: stressImpactPct,
+      i: 'bolt',
+      desc: `Avg stress ${avgStress.toFixed(1)}/10 this week. ${avgStress >= 6 ? 'Elevated stress detected — breathing exercises may help.' : 'Stress levels are well managed.'}`,
+    },
     { l: 'Social Contact', sub: 'Positive Factor', c: C.mint, v: 70, i: 'users', desc: 'Meaningful interactions yesterday helped stabilize mood.' },
     { l: 'Movement', sub: 'Highly Stable', c: C.navy, v: 82, i: 'run', desc: 'Your daily walks are a core pillar of stability.' },
   ];
@@ -43,23 +78,28 @@ export default function RiskScreen() {
       </LinearGradient>
 
       <View style={styles.content}>
-        <View style={styles.statusBanner}>
-          <Pill label="CURRENT STATUS" color={C.mint} bg={C.mintLight} />
-          <Text style={styles.statusScore}>Low Risk</Text>
-          <Text style={styles.statusDesc}>Mental well-being indicators are currently stable.</Text>
+        <View style={[styles.statusBanner, { borderColor: `${riskColor}40`, backgroundColor: `${riskColor}08` }]}>
+          <Pill label="CURRENT STATUS" color={riskColor} bg={riskColorLight} />
+          <Text style={[styles.statusScore, { color: riskColor }]}>{riskLabel}</Text>
+          <Text style={styles.statusDesc}>
+            Risk score {riskToday}/100 — {riskToday < 35 ? 'Mental well-being indicators are currently stable.' : riskToday < 60 ? 'Some indicators need attention.' : 'High stress or low mood detected. Consider seeking support.'}
+          </Text>
           <View style={styles.miniBarRow}>
-            {[35, 42, 38, 45, 40, 36, 30].map((v, i) => (
+            {riskValues.map((v, i) => (
               <View key={i} style={styles.miniBarItem}>
                 <View
                   style={[
                     styles.miniBar,
                     {
-                      height: (v / 50) * 34 + 4,
-                      backgroundColor: i === 6 ? `${C.mint}cc` : `${C.mint}44`,
+                      height: (v / 100) * 34 + 4,
+                      backgroundColor:
+                        i === riskValues.length - 1
+                          ? `${riskColor}cc`
+                          : `${riskColor}44`,
                     },
                   ]}
                 />
-                <Text style={styles.dayLabel}>{'MTWTFSS'[i]}</Text>
+                <Text style={styles.dayLabel}>{'SMTWTFS'[i]}</Text>
               </View>
             ))}
           </View>
