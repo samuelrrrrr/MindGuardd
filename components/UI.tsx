@@ -1,4 +1,4 @@
-import React from 'react';
+import React, { useState } from 'react';
 import { View, Text, StyleSheet, ViewStyle } from 'react-native';
 import Svg, {
   Circle,
@@ -159,46 +159,75 @@ export const LineChart: React.FC<LineChartProps> = ({
 
 /* ── MULTI LINE CHART ── */
 interface MultiLineChartProps {
-  series: { data: number[]; color: string }[];
+  series: { data: number[]; color: string; label?: string }[];
   h?: number;
 }
 export const MultiLineChart: React.FC<MultiLineChartProps> = ({
   series,
-  h = 60,
+  h = 140,
 }) => {
-  const W = 300;
+  const [containerW, setContainerW] = useState(0);
+  const W = containerW || 300;
   const H = h;
+  const PADDING = { top: 8, bottom: 8 };
+  const drawH = H - PADDING.top - PADDING.bottom;
+
+  // ── Shared min/max across ALL series so lines are on the same scale
+  const allValues = series.flatMap(s => s.data);
+  const globalMin = Math.min(...allValues);
+  const globalMax = Math.max(...allValues);
+  const range = globalMax - globalMin || 1;
+
+  const toY = (v: number) =>
+    PADDING.top + drawH - ((v - globalMin) / range) * drawH;
+
   return (
-    <Svg width="100%" viewBox={`0 0 ${W} ${H}`} preserveAspectRatio="none" style={{ display: 'flex' }}>
-      {series.map((s, idx) => {
-        const data = s.data;
-        const color = s.color;
-        const min = Math.min(...data);
-        const max = Math.max(...data);
-        const range = max - min || 1;
-        const pts = data.map((v, i) => [
-          (i / (data.length - 1)) * W,
-          H - ((v - min) / range) * (H - 12) - 6,
-        ]);
-        const d = pts
-          .map((p, i) => (i === 0 ? `M ${p[0]},${p[1]}` : `L ${p[0]},${p[1]}`))
-          .join(' ');
-        const lastPt = pts[pts.length - 1];
-        return (
-          <React.Fragment key={idx}>
-            <Path
-              d={d}
-              fill="none"
-              stroke={color}
-              strokeWidth="2.5"
-              strokeLinecap="round"
-              strokeLinejoin="round"
+    <View
+      style={{ height: H, width: '100%' }}
+      onLayout={e => setContainerW(e.nativeEvent.layout.width)}
+    >
+      {containerW > 0 && (
+        <Svg width={W} height={H}>
+          {/* subtle grid lines */}
+          {[0, 0.25, 0.5, 0.75, 1].map((pct, i) => (
+            <Line
+              key={i}
+              x1={0}
+              y1={PADDING.top + drawH * (1 - pct)}
+              x2={W}
+              y2={PADDING.top + drawH * (1 - pct)}
+              stroke={`${C.purplePale}80`}
+              strokeWidth={1}
+              strokeDasharray="4 4"
             />
-            <Circle cx={lastPt[0]} cy={lastPt[1]} r="4" fill={color} />
-          </React.Fragment>
-        );
-      })}
-    </Svg>
+          ))}
+          {series.map((s, idx) => {
+            const pts = s.data.map((v, i) => ({
+              x: s.data.length === 1 ? W / 2 : (i / (s.data.length - 1)) * W,
+              y: toY(v),
+            }));
+            const d = pts
+              .map((p, i) => (i === 0 ? `M ${p.x},${p.y}` : `L ${p.x},${p.y}`))
+              .join(' ');
+            const lastPt = pts[pts.length - 1];
+            return (
+              <React.Fragment key={idx}>
+                <Path
+                  d={d}
+                  fill="none"
+                  stroke={s.color}
+                  strokeWidth="2.5"
+                  strokeLinecap="round"
+                  strokeLinejoin="round"
+                />
+                <Circle cx={lastPt.x} cy={lastPt.y} r={5} fill={s.color} />
+                <Circle cx={lastPt.x} cy={lastPt.y} r={9} fill={`${s.color}30`} />
+              </React.Fragment>
+            );
+          })}
+        </Svg>
+      )}
+    </View>
   );
 };
 
