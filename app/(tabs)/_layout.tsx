@@ -17,7 +17,7 @@ function CustomTabBar({ state, descriptors, navigation }: any) {
     { id: "index", icon: "home", label: "Home" },
     { id: "journal", icon: "insights", label: "Journal" },
     { id: "checkin", icon: "plus", label: "" },
-    { id: "insights", icon: "activity", label: "Activity" },
+    { id: "activity", icon: "wind", label: "Breathe" },
     { id: "trends", icon: "trends", label: "Journey" },
   ];
 
