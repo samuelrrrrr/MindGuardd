@@ -72,11 +72,10 @@ export default function HomeScreen() {
               style={{
                 position: "absolute",
                 right: -35,
-                bottom: -50,
+                bottom: -40,
                 width: 170,
                 height: 170,
-                opacity: 100,
-                zIndex: -1,
+                opacity: 1,
               }}
             />
             <Text style={styles.greeting}>
