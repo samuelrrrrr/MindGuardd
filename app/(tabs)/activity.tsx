@@ -43,10 +43,12 @@ export default function ActivityScreen() {
   const [activeMethod, setActiveMethod] = useState(METHODS[0]);
   const [idx, setIdx] = useState(0);
   const [isPlaying, setIsPlaying] = useState(false);
+  const [timeLeft, setTimeLeft] = useState(0);
   const scaleAnim = React.useRef(new Animated.Value(0)).current;
 
   useEffect(() => {
     let timeout: any;
+    let interval: any;
     let isMounted = true;
 
     if (!isPlaying) {
@@ -56,6 +58,7 @@ export default function ActivityScreen() {
         useNativeDriver: true,
       }).start();
       setIdx(0);
+      setTimeLeft(0);
       return;
     }
 
@@ -65,6 +68,14 @@ export default function ActivityScreen() {
 
       const phaseStr = activeMethod.phases[currentIdx];
       const duration = activeMethod.durations[currentIdx];
+      const durationSecs = duration / 1000;
+
+      setTimeLeft(durationSecs);
+
+      clearInterval(interval);
+      interval = setInterval(() => {
+        setTimeLeft((prev) => (prev > 0 ? prev - 1 : 0));
+      }, 1000);
 
       const isIn =
         phaseStr.includes("Breathe in") || phaseStr.includes("Inhale");
@@ -95,6 +106,7 @@ export default function ActivityScreen() {
     return () => {
       isMounted = false;
       clearTimeout(timeout);
+      clearInterval(interval);
     };
   }, [activeMethod, isPlaying]);
 
@@ -171,7 +183,11 @@ export default function ActivityScreen() {
                 },
               ]}
             />
-            <View style={styles.circleInner} />
+            <View style={styles.circleInner}>
+              <Text style={styles.circleText}>
+                {isPlaying ? timeLeft : "Tap here"}
+              </Text>
+            </View>
           </TouchableOpacity>
         </View>
 
@@ -289,15 +305,23 @@ const styles = StyleSheet.create({
     backgroundColor: "#fff",
   },
   circleInner: {
-    width: 120,
-    height: 120,
-    borderRadius: 60,
+    width: 150,
+    height: 150,
+    borderRadius: 80,
     backgroundColor: "#f6f8fa",
     shadowColor: "#000",
     shadowOffset: { width: 0, height: 4 },
     shadowOpacity: 0.1,
     shadowRadius: 10,
     elevation: 5,
+    alignItems: "center",
+    justifyContent: "center",
+  },
+  circleText: {
+    fontSize: 20,
+    fontWeight: "700",
+    color: C.navy,
+    textAlign: "center",
   },
   textContainer: {
     alignItems: "center",

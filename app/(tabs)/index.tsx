@@ -70,7 +70,7 @@ export default function HomeScreen() {
               style={styles.bellBtn}
               onPress={() => setShowNotifications(true)}
             >
-              <Icon n="bell" s={18} c="rgba(255,255,255,0.9)" />
+              <Icon n="bell" s={20} c="rgba(255,255,255,0.9)" />
               <View style={styles.bellDot} />
             </TouchableOpacity>
           </View>
@@ -82,7 +82,7 @@ export default function HomeScreen() {
               style={{
                 position: "absolute",
                 right: -155,
-                bottom: -150,
+                bottom: -160,
                 width: 350,
                 height: 350,
                 opacity: 1,
@@ -123,6 +123,15 @@ export default function HomeScreen() {
                 <Ring value={sleepScore} color={C.purpleLight} sub="SLEEP" />
               </View>
             </View>
+            <TouchableOpacity
+              style={styles.aiBtn}
+              onPress={() => router.push("/(tabs)/trends")}
+            >
+              <Text style={[styles.aiBtnText, { color: C.purpleLight }]}>
+                View Your Journey
+              </Text>
+              <Icon n="arrow" s={15} c={C.purpleLight} />
+            </TouchableOpacity>
           </Card>
 
           {/* AI INSIGHT */}
@@ -142,15 +151,6 @@ export default function HomeScreen() {
             <Text style={styles.aiQuote}>
               "Calm is a superpower that starts within."
             </Text>
-            <TouchableOpacity
-              style={styles.aiBtn}
-              onPress={() => router.push("/(tabs)/trends")}
-            >
-              <Text style={[styles.aiBtnText, { color: C.purpleLight }]}>
-                View Your Journey
-              </Text>
-              <Icon n="arrow" s={13} c={C.purpleLight} />
-            </TouchableOpacity>
           </LinearGradient>
 
           {/* QUICK ACTIONS */}
@@ -344,7 +344,7 @@ const styles = StyleSheet.create({
   },
   aiQuote: {
     fontSize: 12,
-    color: "rgba(255,255,255,0.5)",
+    color: "rgba(255, 255, 255, 1)",
     fontStyle: "italic",
     marginBottom: 14,
   },
@@ -359,6 +359,7 @@ const styles = StyleSheet.create({
     alignItems: "center",
     gap: 6,
     alignSelf: "flex-start",
+    top: 5,
   },
   aiBtnText: { fontSize: 12, fontWeight: "700" },
 

@@ -1,13 +1,14 @@
 import { LinearGradient } from "expo-linear-gradient";
 import React, { useState } from "react";
 import {
+  ActivityIndicator,
+  Image,
   ScrollView,
   StyleSheet,
   Text,
   TextInput,
   TouchableOpacity,
   View,
-  ActivityIndicator,
 } from "react-native";
 import { useSafeAreaInsets } from "react-native-safe-area-context";
 import Icon from "../../components/Icon";
@@ -45,20 +46,30 @@ export default function CheckInScreen() {
 
   const sleepHoursMapping = [4, 6, 7, 8, 9];
   const sleepHours = sleepHoursMapping[sleepIndex];
-  
+
   const stressScoreMapping = [10, 7, 5, 3, 0];
   const stressScore = stressScoreMapping[stressIndex];
 
   const handleSave = async () => {
     setIsLoading(true);
-    const newCheckIn = await saveCheckIn({ mood, sleep: sleepHours, stress: stressScore, act: activityText || "None" });
+    const newCheckIn = await saveCheckIn({
+      mood,
+      sleep: sleepHours,
+      stress: stressScore,
+      act: activityText || "None",
+    });
     if (newCheckIn) {
       const history = await getCheckIns();
       const risk = computeRiskScore(newCheckIn);
       const patterns = detectPatterns(history, []);
       // Ganti dengan API key OpenAI kamu di file .env menggunakan nama variabel EXPO_PUBLIC_OPENAI_API_KEY
       const apiKey = process.env.EXPO_PUBLIC_OPENAI_API_KEY || "";
-      const insight = await generateOpenAIInsight(apiKey, history, risk, patterns);
+      const insight = await generateOpenAIInsight(
+        apiKey,
+        history,
+        risk,
+        patterns,
+      );
       setAiInsight(insight);
     }
     setIsLoading(false);
@@ -75,7 +86,19 @@ export default function CheckInScreen() {
         colors={[C.navyDeep, C.navy]}
         style={[styles.hero, { paddingTop: insets.top + 8 }]}
       >
-        <View style={{ paddingHorizontal: 22, paddingBottom: 0 }}>
+        <Image
+          source={require("../../assets/images/onboard-04.png")}
+          style={styles.bgImage}
+        />
+        <View
+          style={{
+            paddingHorizontal: 22,
+            paddingBottom: 0,
+            zIndex: 1,
+            elevation: 1,
+            position: "relative",
+          }}
+        >
           <Text style={styles.heroTitle}>
             How are you feeling,{"\n"}
             <Text style={{ color: C.purpleLight }}>Sarah?</Text>
@@ -94,7 +117,7 @@ export default function CheckInScreen() {
               <Icon n="heart" s={17} c={C.coral} />
               <Text style={styles.inputLabel}>Mood</Text>
             </View>
-            <Text style={{ fontSize: 14, fontWeight: '800', color: C.coral }}>
+            <Text style={{ fontSize: 14, fontWeight: "800", color: C.coral }}>
               {moodLabels[moodIndex]}
             </Text>
           </View>
@@ -127,7 +150,7 @@ export default function CheckInScreen() {
               <Icon n="moon" s={17} c={C.purple} />
               <Text style={styles.inputLabel}>Sleep Quality</Text>
             </View>
-            <Text style={{ fontSize: 14, fontWeight: '800', color: C.purple }}>
+            <Text style={{ fontSize: 14, fontWeight: "800", color: C.purple }}>
               {sleepLabels[sleepIndex]}
             </Text>
           </View>
@@ -146,7 +169,11 @@ export default function CheckInScreen() {
                 activeOpacity={0.75}
               >
                 <View style={{ paddingVertical: 4 }}>
-                  <Icon n={e} s={24} c={sleepIndex === i ? C.purple : C.muted} />
+                  <Icon
+                    n={e}
+                    s={24}
+                    c={sleepIndex === i ? C.purple : C.muted}
+                  />
                 </View>
               </TouchableOpacity>
             ))}
@@ -160,7 +187,7 @@ export default function CheckInScreen() {
               <Icon n="bolt" s={17} c={C.amber} />
               <Text style={styles.inputLabel}>Stress Level</Text>
             </View>
-            <Text style={{ fontSize: 14, fontWeight: '800', color: C.amber }}>
+            <Text style={{ fontSize: 14, fontWeight: "800", color: C.amber }}>
               {stressLabels[stressIndex]}
             </Text>
           </View>
@@ -179,7 +206,11 @@ export default function CheckInScreen() {
                 activeOpacity={0.75}
               >
                 <View style={{ paddingVertical: 4 }}>
-                  <Icon n={e} s={24} c={stressIndex === i ? C.amber : C.muted} />
+                  <Icon
+                    n={e}
+                    s={24}
+                    c={stressIndex === i ? C.amber : C.muted}
+                  />
                 </View>
               </TouchableOpacity>
             ))}
@@ -219,12 +250,21 @@ export default function CheckInScreen() {
                 <Text style={styles.aiLabel}>AI Insight</Text>
               </View>
               <Text style={styles.aiTitle}>
-                {aiInsight ? `${aiInsight.condition}\n\n${aiInsight.analysis}` : 'Memproses AI Insight...'}
+                {aiInsight
+                  ? `${aiInsight.condition}\n\n${aiInsight.analysis}`
+                  : "Memproses AI Insight..."}
               </Text>
               {aiInsight && aiInsight.recommendations.length > 0 && (
                 <View style={{ marginTop: 12 }}>
                   {aiInsight.recommendations.map((rec, i) => (
-                    <Text key={i} style={{ color: "rgba(255,255,255,0.8)", fontSize: 13, marginBottom: 4 }}>
+                    <Text
+                      key={i}
+                      style={{
+                        color: "rgba(255,255,255,0.8)",
+                        fontSize: 13,
+                        marginBottom: 4,
+                      }}
+                    >
                       • {rec}
                     </Text>
                   ))}
@@ -233,8 +273,15 @@ export default function CheckInScreen() {
             </LinearGradient>
           </View>
         ) : (
-          <TouchableOpacity activeOpacity={0.8} onPress={handleSave} disabled={isLoading}>
-            <LinearGradient colors={[C.navy, C.purple]} style={[styles.saveBtn, isLoading && { opacity: 0.8 }]}>
+          <TouchableOpacity
+            activeOpacity={0.8}
+            onPress={handleSave}
+            disabled={isLoading}
+          >
+            <LinearGradient
+              colors={[C.navy, C.purple]}
+              style={[styles.saveBtn, isLoading && { opacity: 0.8 }]}
+            >
               {isLoading ? (
                 <ActivityIndicator color="#fff" size="small" />
               ) : (
@@ -251,9 +298,18 @@ export default function CheckInScreen() {
 const styles = StyleSheet.create({
   scroll: { flex: 1, backgroundColor: C.bg },
   hero: { paddingBottom: 32 },
+  bgImage: {
+    position: "absolute",
+    width: 550,
+    height: 300,
+    right: -220,
+    bottom: -100,
+    opacity: 0.9,
+    resizeMode: "contain",
+  },
   heroTitle: { fontSize: 24, fontWeight: "900", color: "#fff", lineHeight: 32 },
-  heroSub: { fontSize: 13, color: "rgba(255,255,255,0.5)", marginTop: 7 },
-  content: { padding: 16, gap: 12, marginTop: -22 },
+  heroSub: { fontSize: 13, color: "rgba(255, 255, 255, 1)", marginTop: 7 },
+  content: { padding: 16, gap: 12, marginTop: 2 },
 
   sectionLabel: {
     fontSize: 11,
