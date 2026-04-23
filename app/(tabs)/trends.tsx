@@ -1,0 +1,236 @@
+import React, { useState } from 'react';
+import {
+  View,
+  Text,
+  ScrollView,
+  StyleSheet,
+  TouchableOpacity,
+} from 'react-native';
+import { LinearGradient } from 'expo-linear-gradient';
+import { useSafeAreaInsets } from 'react-native-safe-area-context';
+import { C } from '../../constants/Colors';
+import { Card, LineChart, MultiLineChart, Pill } from '../../components/UI';
+import Icon from '../../components/Icon';
+
+type TimeRange = 'weekly' | 'monthly';
+type Metric = 'mood' | 'risk' | 'sleep';
+
+const MOCK_DATA = {
+  weekly: {
+    mood: [60, 75, 65, 80, 85, 90, 88],
+    risk: [40, 30, 35, 20, 15, 10, 15],
+    sleep: [6, 7, 6.5, 8, 7.5, 8.5, 8],
+    labels: ['Mon', 'Tue', 'Wed', 'Thu', 'Fri', 'Sat', 'Sun'],
+  },
+  monthly: {
+    mood: [65, 68, 70, 75, 72, 80, 85, 88, 85, 82, 80, 85, 90, 88, 85, 80, 82, 85, 88, 90, 92, 88, 85, 80, 82, 85, 88, 90, 92, 95],
+    risk: [30, 28, 25, 20, 22, 18, 15, 12, 15, 18, 20, 15, 10, 12, 15, 20, 18, 15, 12, 10, 8, 12, 15, 20, 18, 15, 12, 10, 8, 5],
+    sleep: [7, 6.5, 7, 7.5, 8, 7.5, 7, 6.5, 7, 7.5, 8, 8.5, 8, 7.5, 7, 6.5, 7, 7.5, 8, 7.5, 7, 6.5, 7, 7.5, 8, 8.5, 8, 7.5, 8, 8.5],
+    labels: ['W1', 'W2', 'W3', 'W4'], // We can show fewer labels for monthly
+  }
+};
+
+const CHECKIN_HISTORY = [
+  {
+    id: '1',
+    date: 'Today, 8:00 AM',
+    mood: 88,
+    sleep: 8,
+    risk: 'Low',
+    note: 'Woke up feeling refreshed after a full 8 hours of sleep. Looking forward to the weekend.',
+    tags: ['Exercise', 'Reading'],
+  },
+  {
+    id: '2',
+    date: 'Yesterday, 9:30 PM',
+    mood: 75,
+    sleep: 6.5,
+    risk: 'Medium',
+    note: 'Long day at work, felt a bit stressed in the afternoon but a short walk helped.',
+    tags: ['Work', 'Stress'],
+  },
+  {
+    id: '3',
+    date: '2 Days Ago, 7:15 AM',
+    mood: 85,
+    sleep: 7.5,
+    risk: 'Low',
+    note: 'Morning yoga session set a great tone for the day. Feeling productive.',
+    tags: ['Yoga', 'Productive'],
+  },
+  {
+    id: '4',
+    date: '3 Days Ago, 8:45 PM',
+    mood: 60,
+    sleep: 5,
+    risk: 'High',
+    note: 'Did not sleep well last night. Struggled to concentrate all day. Need to rest.',
+    tags: ['Tired', 'Anxiety'],
+  },
+];
+
+export default function TrendsScreen() {
+  const insets = useSafeAreaInsets();
+  const [timeRange, setTimeRange] = useState<TimeRange>('weekly');
+  // No longer tracking a single metric, we show all three
+  // const [metric, setMetric] = useState<Metric>('mood');
+
+  const seriesData = [
+    { data: MOCK_DATA[timeRange].mood, color: C.mint, label: 'Mood' },
+    { data: MOCK_DATA[timeRange].risk, color: C.coral, label: 'Risk' },
+    { data: MOCK_DATA[timeRange].sleep, color: C.purpleLight, label: 'Sleep' },
+  ];
+  const currentLabels = timeRange === 'weekly' 
+    ? MOCK_DATA.weekly.labels 
+    : MOCK_DATA.monthly.labels;
+
+  const metricConfig = {
+    mood: { label: 'Mood Score', color: C.mint },
+    risk: { label: 'Risk Level', color: C.coral },
+    sleep: { label: 'Hours of Sleep', color: C.purpleLight },
+  };
+
+  return (
+    <ScrollView
+      style={styles.scroll}
+      contentContainerStyle={{ paddingBottom: 30 }}
+      showsVerticalScrollIndicator={false}
+    >
+      <LinearGradient
+        colors={[C.navyDeep, C.navy]}
+        style={[styles.hero, { paddingTop: insets.top + 8 }]}
+      >
+        <View style={{ paddingHorizontal: 22 }}>
+          <Text style={styles.heroTitle}>Your Journey</Text>
+          <Text style={styles.heroSub}>Track your mental well-being over time</Text>
+        </View>
+      </LinearGradient>
+
+      <View style={styles.content}>
+        {/* FILTER BAR */}
+        <View style={styles.filterRow}>
+          <View style={styles.timeRangeToggle}>
+            {(['weekly', 'monthly'] as TimeRange[]).map((t) => (
+              <TouchableOpacity
+                key={t}
+                style={[styles.toggleBtn, timeRange === t && styles.toggleBtnActive]}
+                onPress={() => setTimeRange(t)}
+              >
+                <Text style={[styles.toggleText, timeRange === t && styles.toggleTextActive]}>
+                  {t.charAt(0).toUpperCase() + t.slice(1)}
+                </Text>
+              </TouchableOpacity>
+            ))}
+          </View>
+        </View>
+
+        {/* CHART CARD */}
+        <Card style={{ marginBottom: 16, marginTop: 16 }}>
+          <View style={{ marginBottom: 20, marginTop: 4 }}>
+            <Text style={styles.chartTitle}>Overall Well-being</Text>
+            <Text style={styles.chartSub}>
+              Mood, Risk, and Sleep correlation this {timeRange === 'weekly' ? 'week' : 'month'}
+            </Text>
+            
+            {/* Legend */}
+            <View style={{ flexDirection: 'row', gap: 12, marginTop: 12 }}>
+              {seriesData.map(s => (
+                <View key={s.label} style={{ flexDirection: 'row', alignItems: 'center', gap: 4 }}>
+                  <View style={{ width: 8, height: 8, borderRadius: 4, backgroundColor: s.color }} />
+                  <Text style={{ fontSize: 11, color: C.sub, fontWeight: '600' }}>{s.label}</Text>
+                </View>
+              ))}
+            </View>
+          </View>
+
+          <MultiLineChart series={seriesData} h={140} />
+          
+          <View style={[styles.rowBetween, { marginTop: 16 }]}>
+            {currentLabels.map((l, i) => (
+              <Text key={i} style={styles.chartLabel}>{l}</Text>
+            ))}
+          </View>
+        </Card>
+
+        <Text style={styles.sectionLabel}>Daily Check-in History</Text>
+
+        {/* HISTORY LIST */}
+        {CHECKIN_HISTORY.map((item) => (
+          <Card key={item.id} style={{ marginBottom: 12, padding: 16 }}>
+            <View style={styles.historyHeader}>
+              <Text style={styles.historyDate}>{item.date}</Text>
+              <View style={styles.historyMetrics}>
+                <View style={styles.smallMetric}>
+                  <Icon n="sparkle" s={12} c={C.mint} />
+                  <Text style={[styles.smallMetricText, { color: C.mint }]}>{item.mood}</Text>
+                </View>
+                <View style={styles.smallMetric}>
+                  <Icon n="moon" s={12} c={C.purple} />
+                  <Text style={[styles.smallMetricText, { color: C.purple }]}>{item.sleep}h</Text>
+                </View>
+              </View>
+            </View>
+            
+            <Text style={styles.historyNote}>{item.note}</Text>
+            
+            <View style={styles.tagsRow}>
+              {item.tags.map(t => (
+                <View key={t} style={styles.tagBadge}>
+                  <Text style={styles.tagText}>{t}</Text>
+                </View>
+              ))}
+              <View style={[styles.tagBadge, { backgroundColor: item.risk === 'Low' ? C.mintLight : item.risk === 'Medium' ? C.amberLight : C.coralLight }]}>
+                <Text style={[styles.tagText, { color: item.risk === 'Low' ? C.mint : item.risk === 'Medium' ? C.amber : C.coral }]}>
+                  Risk: {item.risk}
+                </Text>
+              </View>
+            </View>
+          </Card>
+        ))}
+
+      </View>
+    </ScrollView>
+  );
+}
+
+const styles = StyleSheet.create({
+  scroll: { flex: 1, backgroundColor: C.bg },
+  hero: { paddingBottom: 32 },
+  heroTitle: { fontSize: 28, fontWeight: '900', color: '#fff' },
+  heroSub: { fontSize: 14, color: 'rgba(255,255,255,0.6)', marginTop: 6 },
+  content: { padding: 16, gap: 4, marginTop: 10 },
+
+  filterRow: { flexDirection: 'row', justifyContent: 'center', marginBottom: 8 },
+  timeRangeToggle: { 
+    flexDirection: 'row', 
+    backgroundColor: 'rgba(255,255,255,0.5)', 
+    borderRadius: 20, 
+    padding: 4 
+  },
+  toggleBtn: { paddingVertical: 8, paddingHorizontal: 24, borderRadius: 16 },
+  toggleBtnActive: { backgroundColor: '#fff', shadowColor: '#000', shadowOffset: { width: 0, height: 2 }, shadowOpacity: 0.1, shadowRadius: 4, elevation: 2 },
+  toggleText: { fontSize: 13, fontWeight: '600', color: C.sub },
+  toggleTextActive: { color: C.navy, fontWeight: '800' },
+
+  metricTabs: { flexDirection: 'row', borderBottomWidth: 1, borderBottomColor: C.purplePale, marginBottom: 10 },
+  metricTab: { flex: 1, paddingVertical: 12, alignItems: 'center', borderBottomWidth: 3, borderBottomColor: 'transparent' },
+  metricTabText: { fontSize: 13, fontWeight: '600', color: C.sub },
+
+  chartTitle: { fontSize: 18, fontWeight: '800', color: C.text },
+  chartSub: { fontSize: 12, color: C.sub, marginTop: 2 },
+  rowBetween: { flexDirection: 'row', justifyContent: 'space-between', alignItems: 'center' },
+  chartLabel: { fontSize: 10, color: C.muted, fontWeight: '600' },
+
+  sectionLabel: { fontSize: 13, fontWeight: '800', color: C.text, marginVertical: 12, marginLeft: 4 },
+
+  historyHeader: { flexDirection: 'row', justifyContent: 'space-between', alignItems: 'center', marginBottom: 10 },
+  historyDate: { fontSize: 12, fontWeight: '700', color: C.navy },
+  historyMetrics: { flexDirection: 'row', gap: 8 },
+  smallMetric: { flexDirection: 'row', alignItems: 'center', backgroundColor: '#f4f5ffff', paddingHorizontal: 6, paddingVertical: 3, borderRadius: 6, gap: 4 },
+  smallMetricText: { fontSize: 11, fontWeight: '800' },
+  
+  historyNote: { fontSize: 13, color: C.sub, lineHeight: 20, marginBottom: 12 },
+  tagsRow: { flexDirection: 'row', flexWrap: 'wrap', gap: 6 },
+  tagBadge: { backgroundColor: C.bg, paddingHorizontal: 8, paddingVertical: 4, borderRadius: 8 },
+  tagText: { fontSize: 10, fontWeight: '700', color: C.sub },
+});

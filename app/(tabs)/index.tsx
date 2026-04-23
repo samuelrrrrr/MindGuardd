@@ -1,98 +1,503 @@
-import { Image } from 'expo-image';
-import { Platform, StyleSheet } from 'react-native';
+import { LinearGradient } from "expo-linear-gradient";
+import { useRouter } from "expo-router";
+import React, { useState } from "react";
+import {
+  Dimensions,
+  Image,
+  Modal,
+  Pressable,
+  ScrollView,
+  StyleSheet,
+  Text,
+  TouchableOpacity,
+  View,
+} from "react-native";
 
-import { HelloWave } from '@/components/hello-wave';
-import ParallaxScrollView from '@/components/parallax-scroll-view';
-import { ThemedText } from '@/components/themed-text';
-import { ThemedView } from '@/components/themed-view';
-import { Link } from 'expo-router';
+import { useSafeAreaInsets } from "react-native-safe-area-context";
+import Icon from "../../components/Icon";
+import { Card, Ring } from "../../components/UI";
+import { C } from "../../constants/Colors";
+
+const { width } = Dimensions.get("window");
 
 export default function HomeScreen() {
-  return (
-    <ParallaxScrollView
-      headerBackgroundColor={{ light: '#A1CEDC', dark: '#1D3D47' }}
-      headerImage={
-        <Image
-          source={require('@/assets/images/partial-react-logo.png')}
-          style={styles.reactLogo}
-        />
-      }>
-      <ThemedView style={styles.titleContainer}>
-        <ThemedText type="title">Welcome!</ThemedText>
-        <HelloWave />
-      </ThemedView>
-      <ThemedView style={styles.stepContainer}>
-        <ThemedText type="subtitle">Step 1: Try it</ThemedText>
-        <ThemedText>
-          Edit <ThemedText type="defaultSemiBold">app/(tabs)/index.tsx</ThemedText> to see changes.
-          Press{' '}
-          <ThemedText type="defaultSemiBold">
-            {Platform.select({
-              ios: 'cmd + d',
-              android: 'cmd + m',
-              web: 'F12',
-            })}
-          </ThemedText>{' '}
-          to open developer tools.
-        </ThemedText>
-      </ThemedView>
-      <ThemedView style={styles.stepContainer}>
-        <Link href="/modal">
-          <Link.Trigger>
-            <ThemedText type="subtitle">Step 2: Explore</ThemedText>
-          </Link.Trigger>
-          <Link.Preview />
-          <Link.Menu>
-            <Link.MenuAction title="Action" icon="cube" onPress={() => alert('Action pressed')} />
-            <Link.MenuAction
-              title="Share"
-              icon="square.and.arrow.up"
-              onPress={() => alert('Share pressed')}
-            />
-            <Link.Menu title="More" icon="ellipsis">
-              <Link.MenuAction
-                title="Delete"
-                icon="trash"
-                destructive
-                onPress={() => alert('Delete pressed')}
-              />
-            </Link.Menu>
-          </Link.Menu>
-        </Link>
+  const router = useRouter();
+  const insets = useSafeAreaInsets();
+  const [showNotifications, setShowNotifications] = useState(false);
 
-        <ThemedText>
-          {`Tap the Explore tab to learn more about what's included in this starter app.`}
-        </ThemedText>
-      </ThemedView>
-      <ThemedView style={styles.stepContainer}>
-        <ThemedText type="subtitle">Step 3: Get a fresh start</ThemedText>
-        <ThemedText>
-          {`When you're ready, run `}
-          <ThemedText type="defaultSemiBold">npm run reset-project</ThemedText> to get a fresh{' '}
-          <ThemedText type="defaultSemiBold">app</ThemedText> directory. This will move the current{' '}
-          <ThemedText type="defaultSemiBold">app</ThemedText> to{' '}
-          <ThemedText type="defaultSemiBold">app-example</ThemedText>.
-        </ThemedText>
-      </ThemedView>
-    </ParallaxScrollView>
+  return (
+    <>
+    <ScrollView
+      style={styles.scroll}
+      contentContainerStyle={{ paddingBottom: 30 }}
+      showsVerticalScrollIndicator={false}
+    >
+      {/* HERO */}
+      <LinearGradient
+        colors={[C.navyDeep, C.navy, "#2d3182"]}
+        start={{ x: 0.1, y: 0 }}
+        end={{ x: 0.9, y: 1 }}
+        style={[styles.hero, { paddingTop: insets.top + 8 }]}
+      >
+        {/* Top bar */}
+        <View style={styles.topBar}>
+          <View style={styles.avatarRow}>
+            <LinearGradient
+              colors={[C.purpleLight, C.purple]}
+              style={styles.avatar}
+            >
+              <Image 
+                source={require("../../assets/images/asistant.png")} 
+                style={styles.avatarInner} 
+              />
+            </LinearGradient>
+            <View>
+              <Text style={styles.welcomeText}>Welcome back</Text>
+              <Text style={styles.nameText}>Sarah ✨</Text>
+            </View>
+          </View>
+          <TouchableOpacity style={styles.bellBtn} onPress={() => setShowNotifications(true)}>
+            <Icon n="bell" s={18} c="rgba(255,255,255,0.9)" />
+            <View style={styles.bellDot} />
+          </TouchableOpacity>
+        </View>
+
+        {/* Greeting */}
+        <View style={styles.greetingBox}>
+          <Image
+            source={require("../../assets/images/asistant.png")}
+            style={{
+              position: "absolute",
+              right: -35,
+              bottom: -50,
+              width: 170,
+              height: 170,
+              opacity: 100,
+              zIndex: -1,
+            }}
+          />
+          <Text style={styles.greeting}>
+            Good Morning,{"\n"}how are you today?
+          </Text>
+          <Text style={styles.greetingSub}>
+            Your mental sanctuary is ready for the day.
+          </Text>
+        </View>
+      </LinearGradient>
+
+      {/*DAILY PROGRESS*/}
+      <View style={styles.content}>
+        <Card style={styles.card}>
+          <Text style={styles.sectionLabel}>Daily Progress</Text>
+          <View
+            style={{
+              flexDirection: "row",
+              justifyContent: "space-around",
+              alignItems: "center",
+              paddingVertical: 10,
+              paddingTop: 24,
+            }}
+          >
+            <View style={{ alignItems: "center" }}>
+              <Ring value={24} color={C.mint} sub="MOOD" />
+            </View>
+            <View style={{ alignItems: "center" }}>
+              <Ring value={24} color={C.red} sub="RISK" />
+            </View>
+            <View style={{ alignItems: "center" }}>
+              <Ring value={24} color={C.purpleLight} sub="SLEEP" />
+            </View>
+          </View>
+        </Card>
+
+        {/* AI INSIGHT */}
+        <LinearGradient
+          colors={[C.navyDeep, "#2d2b8e"]}
+          style={[styles.card, { borderRadius: 22, padding: 24 }]}
+        >
+          <View style={styles.aiHeader}>
+            <View style={styles.aiIcon}>
+              <Icon n="sparkle" s={13} c={C.purpleLight} />
+            </View>
+            <Text style={styles.aiLabel}>AI Insight</Text>
+          </View>
+          <Text style={styles.aiTitle}>
+            Focus on your breathing for just 3 minutes to lower cortisol.
+          </Text>
+          <Text style={styles.aiQuote}>
+            "Calm is a superpower that starts within."
+          </Text>
+          <TouchableOpacity
+            style={styles.aiBtn}
+            onPress={() => router.push("/screens/insights")}
+          >
+            <Text style={[styles.aiBtnText, { color: C.purpleLight }]}>
+              View full insight
+            </Text>
+            <Icon n="arrow" s={13} c={C.purpleLight} />
+          </TouchableOpacity>
+        </LinearGradient>
+
+        {/* QUICK ACTIONS */}
+        <View>
+          <Text style={[styles.sectionLabel, { marginBottom: 12 }]}>
+            Quick Actions
+          </Text>
+          <View style={styles.quickActions}>
+            {[
+              {
+                label: "Check In",
+                sub: "Daily log",
+                icon: "check",
+                color: C.purple,
+                bg: C.purplePale,
+                screen: "/screens/checkin",
+              },
+              {
+                label: "Log Emotion",
+                sub: "Quick entry",
+                icon: "heart",
+                color: C.coral,
+                bg: C.coralLight,
+                screen: "/screens/emotion",
+              },
+              {
+                label: "Insight",
+                sub: "AI analysis",
+                icon: "sparkle",
+                color: C.amber,
+                bg: C.amberLight,
+                screen: "/screens/insights",
+              },
+            ].map((a) => (
+              <TouchableOpacity
+                key={a.label}
+                style={styles.quickBtn}
+                onPress={() => router.push(a.screen as any)}
+                activeOpacity={0.75}
+              >
+                <View style={[styles.quickIcon, { backgroundColor: a.bg }]}>
+                  <Icon n={a.icon} s={22} c={a.color} />
+                </View>
+                <Text style={styles.quickLabel}>{a.label}</Text>
+                <Text style={styles.quickSub}>{a.sub}</Text>
+              </TouchableOpacity>
+            ))}
+          </View>
+        </View>
+
+        {/* EXTRA SHORTCUTS */}
+        <View style={styles.shortcutGrid}>
+          {[
+            {
+              label: "Risk Analysis",
+              icon: "shield",
+              color: C.navy,
+              bg: "#eaecf8",
+              screen: "/screens/risk",
+            },
+            {
+              label: "Breathing",
+              icon: "wind",
+              color: "#3b82f6",
+              bg: "#eff6ff",
+              screen: "/screens/breathing",
+            },
+          ].map((a) => (
+            <TouchableOpacity
+              key={a.label}
+              style={styles.shortcutBtn}
+              onPress={() => router.push(a.screen as any)}
+              activeOpacity={0.75}
+            >
+              <View style={[styles.shortcutIcon, { backgroundColor: a.bg }]}>
+                <Icon n={a.icon} s={18} c={a.color} />
+              </View>
+              <Text style={styles.shortcutLabel}>{a.label}</Text>
+            </TouchableOpacity>
+          ))}
+        </View>
+      </View>
+    </ScrollView>
+
+      {/* NOTIFICATION MODAL */}
+      <Modal visible={showNotifications} transparent={true} animationType="fade">
+        <Pressable style={styles.modalOverlay} onPress={() => setShowNotifications(false)}>
+          <Pressable style={[styles.notificationBubble, { top: insets.top + 60 }]}>
+            <Text style={styles.notifHeader}>Notifications</Text>
+            <View style={styles.notifItem}>
+              <View style={[styles.notifIcon, { backgroundColor: C.mintLight }]}>
+                <Icon n="check" s={14} c={C.mint} />
+              </View>
+              <View style={{ flex: 1 }}>
+                <Text style={styles.notifTitle}>Daily Check-in Complete</Text>
+                <Text style={styles.notifTime}>Just now</Text>
+              </View>
+            </View>
+            <View style={[styles.notifItem, { marginBottom: 0 }]}>
+              <View style={[styles.notifIcon, { backgroundColor: C.purplePale }]}>
+                <Icon n="sparkle" s={14} c={C.purple} />
+              </View>
+              <View style={{ flex: 1 }}>
+                <Text style={styles.notifTitle}>New AI Insight Available</Text>
+                <Text style={styles.notifTime}>2 hours ago</Text>
+              </View>
+            </View>
+          </Pressable>
+        </Pressable>
+      </Modal>
+    </>
   );
 }
 
 const styles = StyleSheet.create({
-  titleContainer: {
-    flexDirection: 'row',
-    alignItems: 'center',
-    gap: 8,
+  scroll: { flex: 1, backgroundColor: C.bg },
+  hero: { paddingHorizontal: 22, paddingBottom: 40 },
+  content: { padding: 16, gap: 12 },
+  card: { marginBottom: 0 },
+
+  topBar: {
+    flexDirection: "row",
+    alignItems: "center",
+    justifyContent: "space-between",
+    marginBottom: 4,
   },
-  stepContainer: {
-    gap: 8,
-    marginBottom: 8,
+  avatarRow: { flexDirection: "row", alignItems: "center", gap: 11 },
+  avatar: {
+    width: 42,
+    height: 42,
+    borderRadius: 21,
+    overflow: "hidden",
+    alignItems: "center",
+    justifyContent: "center",
   },
-  reactLogo: {
-    height: 178,
-    width: 290,
-    bottom: 0,
-    left: 0,
-    position: 'absolute',
+  avatarInner: { width: 42, height: 42 },
+  welcomeText: {
+    fontSize: 11,
+    color: "rgba(255,255,255,0.55)",
+    fontWeight: "500",
+  },
+  nameText: { fontSize: 15, fontWeight: "800", color: "#fff" },
+  bellBtn: {
+    width: 40,
+    height: 40,
+    backgroundColor: "rgba(255,255,255,0.1)",
+    borderRadius: 20,
+    alignItems: "center",
+    justifyContent: "center",
+  },
+  bellDot: {
+    position: "absolute",
+    top: 7,
+    right: 8,
+    width: 7,
+    height: 7,
+    borderRadius: 3.5,
+    backgroundColor: C.coral,
+  },
+
+  greetingBox: { paddingTop: 16 },
+  greeting: { fontSize: 23, fontWeight: "800", color: "#fff", lineHeight: 30 },
+  greetingSub: {
+    fontSize: 14,
+    color: "rgba(255, 255, 255, 1)",
+    marginTop: 8,
+  },
+
+  rowBetween: {
+    flexDirection: "row",
+    justifyContent: "space-between",
+    alignItems: "center",
+    marginBottom: 14,
+  },
+  sectionLabel: {
+    fontSize: 11,
+    fontWeight: "700",
+    color: C.sub,
+    textTransform: "uppercase",
+    letterSpacing: 0.8,
+  },
+
+  moodRow: { flexDirection: "row", justifyContent: "space-between" },
+  moodItem: { alignItems: "center", gap: 5 },
+  moodEmoji: {
+    width: 46,
+    height: 46,
+    borderRadius: 15,
+    alignItems: "center",
+    justifyContent: "center",
+    borderWidth: 2,
+    borderColor: "transparent",
+  },
+  moodLabel: { fontSize: 9 },
+
+  riskRow: { flexDirection: "row", alignItems: "center" },
+  riskScore: {
+    fontSize: 20,
+    fontWeight: "900",
+    lineHeight: 24,
+    marginBottom: 6,
+    marginTop: 4,
+  },
+  riskDesc: { fontSize: 12, color: C.sub, lineHeight: 19 },
+
+  aiHeader: {
+    flexDirection: "row",
+    alignItems: "center",
+    gap: 7,
+    marginBottom: 10,
+  },
+  aiIcon: {
+    width: 24,
+    height: 24,
+    borderRadius: 8,
+    backgroundColor: "rgba(162,155,254,0.25)",
+    alignItems: "center",
+    justifyContent: "center",
+  },
+  aiLabel: {
+    fontSize: 11,
+    fontWeight: "700",
+    color: C.purpleLight,
+    letterSpacing: 1,
+    textTransform: "uppercase",
+  },
+  aiTitle: {
+    fontSize: 16,
+    fontWeight: "800",
+    color: "#fff",
+    lineHeight: 24,
+    marginBottom: 10,
+  },
+  aiQuote: {
+    fontSize: 12,
+    color: "rgba(255,255,255,0.5)",
+    fontStyle: "italic",
+    marginBottom: 14,
+  },
+  aiBtn: {
+    backgroundColor: "rgba(162,155,254,0.18)",
+    borderWidth: 1,
+    borderColor: "rgba(162,155,254,0.35)",
+    borderRadius: 99,
+    paddingHorizontal: 16,
+    paddingVertical: 9,
+    flexDirection: "row",
+    alignItems: "center",
+    gap: 6,
+    alignSelf: "flex-start",
+  },
+  aiBtnText: { fontSize: 12, fontWeight: "700" },
+
+  stabilityText: { fontSize: 16, fontWeight: "900", color: C.text },
+  barRow: { flexDirection: "row", alignItems: "flex-end", height: 44, gap: 4 },
+  barItem: { flex: 1, alignItems: "center", justifyContent: "flex-end" },
+  barFill: {
+    width: "100%",
+    borderRadius: 4,
+    borderBottomLeftRadius: 0,
+    borderBottomRightRadius: 0,
+  },
+  dayLabel: { fontSize: 9, color: C.muted, fontWeight: "600", marginTop: 3 },
+
+  quickActions: { flexDirection: "row", gap: 10 },
+  quickBtn: {
+    flex: 1,
+    backgroundColor: C.card,
+    borderRadius: 20,
+    paddingVertical: 14,
+    paddingHorizontal: 6,
+    alignItems: "center",
+    gap: 8,
+    shadowColor: "#12175e",
+    shadowOffset: { width: 0, height: 2 },
+    shadowOpacity: 0.08,
+    shadowRadius: 6,
+    elevation: 2,
+  },
+  quickIcon: {
+    width: 46,
+    height: 46,
+    borderRadius: 14,
+    alignItems: "center",
+    justifyContent: "center",
+  },
+  quickLabel: {
+    fontSize: 12,
+    fontWeight: "800",
+    color: C.text,
+    textAlign: "center",
+  },
+  quickSub: { fontSize: 10, color: C.muted, marginTop: -4 },
+
+  shortcutGrid: { flexDirection: "row", gap: 10 },
+  shortcutBtn: {
+    flex: 1,
+    backgroundColor: C.card,
+    borderRadius: 18,
+    padding: 14,
+    flexDirection: "row",
+    alignItems: "center",
+    gap: 10,
+    shadowColor: "#12175e",
+    shadowOffset: { width: 0, height: 2 },
+    shadowOpacity: 0.07,
+    shadowRadius: 5,
+    elevation: 2,
+  },
+  shortcutIcon: {
+    width: 38,
+    height: 38,
+    borderRadius: 12,
+    alignItems: "center",
+    justifyContent: "center",
+  },
+  shortcutLabel: { fontSize: 13, fontWeight: "800", color: C.text, flex: 1 },
+
+  modalOverlay: {
+    flex: 1,
+    backgroundColor: "rgba(0,0,0,0.15)",
+  },
+  notificationBubble: {
+    position: "absolute",
+    right: 20,
+    width: 250,
+    backgroundColor: C.card,
+    borderRadius: 16,
+    padding: 16,
+    shadowColor: "#12175e",
+    shadowOffset: { width: 0, height: 6 },
+    shadowOpacity: 0.15,
+    shadowRadius: 16,
+    elevation: 8,
+  },
+  notifHeader: {
+    fontSize: 16,
+    fontWeight: "800",
+    color: C.text,
+    marginBottom: 14,
+  },
+  notifItem: {
+    flexDirection: "row",
+    alignItems: "center",
+    gap: 12,
+    marginBottom: 14,
+  },
+  notifIcon: {
+    width: 32,
+    height: 32,
+    borderRadius: 10,
+    alignItems: "center",
+    justifyContent: "center",
+  },
+  notifTitle: {
+    fontSize: 12,
+    fontWeight: "700",
+    color: C.text,
+  },
+  notifTime: {
+    fontSize: 10,
+    color: C.sub,
+    marginTop: 2,
   },
 });
