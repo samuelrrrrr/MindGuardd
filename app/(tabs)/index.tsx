@@ -21,7 +21,65 @@ import {
   calcRiskScore,
   MOOD_SCORE,
   TODAY_CHECKIN,
+  LAST_7_DAYS,
+  calcAverages,
+  type DailyCheckIn,
 } from "../../constants/mockData";
+
+// ── AI Insight engine (rule-based) ────────────────────────────────────────────
+function generateAIInsight(entry: DailyCheckIn) {
+  const risk    = calcRiskScore(entry);
+  const { avgStress, avgSleep, avgMood } = calcAverages(LAST_7_DAYS);
+
+  // Determine dominant concern
+  if (entry.stress >= 7) {
+    return {
+      tag: '⚡ High Stress Detected',
+      title: 'Your stress is elevated today. Try a 4-7-8 breathing session to activate your parasympathetic system.',
+      quote: '"You don\'t have to control your thoughts. You just have to stop letting them control you."',
+      color: '#f97316',
+    };
+  }
+  if (entry.sleep <= 4) {
+    return {
+      tag: '🌙 Sleep Deficit',
+      title: 'Poor sleep affects mood and focus. Consider a short nap or wind-down routine tonight.',
+      quote: '"Sleep is the best meditation." — Dalai Lama',
+      color: '#a78bfa',
+    };
+  }
+  if (entry.mood === 'Sad' || entry.mood === 'Neutral') {
+    return {
+      tag: '💭 Mood Support',
+      title: 'Your mood seems low. A 10-minute walk outside can boost serotonin naturally.',
+      quote: '"Even the darkest night will end and the sun will rise."',
+      color: '#60a5fa',
+    };
+  }
+  if (risk < 30 && entry.mood === 'Great') {
+    return {
+      tag: '🌟 Peak Wellbeing',
+      title: 'You\'re thriving! Reinforce this momentum — journal one thing you\'re grateful for today.',
+      quote: '"Happiness is not something ready-made. It comes from your own actions."',
+      color: '#34d399',
+    };
+  }
+  if (avgStress > 5.5) {
+    return {
+      tag: '📊 Weekly Trend Alert',
+      title: `Your avg stress this week is ${avgStress.toFixed(1)}/10. Building a daily 5-min mindfulness habit can reduce it by 30%.`,
+      quote: '"Almost everything will work again if you unplug it for a few minutes, including you."',
+      color: '#fbbf24',
+    };
+  }
+  // Default positive
+  return {
+    tag: '✨ Daily Insight',
+    title: 'Focus on your breathing for just 3 minutes to lower cortisol and sharpen focus.',
+    quote: '"Calm is a superpower that starts within."',
+    color: '#a78bfa',
+  };
+}
 
 const { width } = Dimensions.get("window");
 
@@ -32,9 +90,10 @@ export default function HomeScreen() {
   const [showSidebar, setShowSidebar] = useState(false);
 
   // ── Derived values from today's check-in ───────────────────
-  const moodScore = Math.round((MOOD_SCORE[TODAY_CHECKIN.mood] / 10) * 100);
-  const riskScore = calcRiskScore(TODAY_CHECKIN);
+  const moodScore  = Math.round((MOOD_SCORE[TODAY_CHECKIN.mood] / 10) * 100);
+  const riskScore  = calcRiskScore(TODAY_CHECKIN);
   const sleepScore = Math.round((TODAY_CHECKIN.sleep / 10) * 100);
+  const insight    = generateAIInsight(TODAY_CHECKIN);
 
   return (
     <>
@@ -150,13 +209,20 @@ export default function HomeScreen() {
                 <Icon n="sparkle" s={13} c={C.purpleLight} />
               </View>
               <Text style={styles.aiLabel}>AI Insight</Text>
+              {/* Dynamic condition tag */}
+              <View style={[styles.aiTag, { backgroundColor: `${insight.color}25`, borderColor: `${insight.color}60` }]}>
+                <Text style={[styles.aiTagText, { color: insight.color }]}>{insight.tag}</Text>
+              </View>
             </View>
-            <Text style={styles.aiTitle}>
-              Focus on your breathing for just 3 minutes to lower cortisol.
-            </Text>
-            <Text style={styles.aiQuote}>
-              "Calm is a superpower that starts within."
-            </Text>
+            <Text style={styles.aiTitle}>{insight.title}</Text>
+            <Text style={styles.aiQuote}>{insight.quote}</Text>
+            <TouchableOpacity
+              style={styles.aiBtn}
+              onPress={() => router.push("/screens/insights")}
+            >
+              <Text style={[styles.aiBtnText, { color: insight.color }]}>View full insight</Text>
+              <Icon n="arrow" s={13} c={insight.color} />
+            </TouchableOpacity>
           </LinearGradient>
 
           {/* QUICK ACTIONS */}
@@ -479,6 +545,14 @@ const styles = StyleSheet.create({
     top: 5,
   },
   aiBtnText: { fontSize: 12, fontWeight: "700" },
+  aiTag: {
+    marginLeft: "auto",
+    borderWidth: 1,
+    borderRadius: 99,
+    paddingHorizontal: 9,
+    paddingVertical: 3,
+  },
+  aiTagText: { fontSize: 10, fontWeight: "700" },
 
   stabilityText: { fontSize: 16, fontWeight: "900", color: C.text },
   barRow: { flexDirection: "row", alignItems: "flex-end", height: 44, gap: 4 },
