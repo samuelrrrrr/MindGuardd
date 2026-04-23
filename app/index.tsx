@@ -22,7 +22,7 @@ const ONBOARDING_DATA = [
     description:
       "Your emotions, change everyday. MindGuard helps you track and understand them.",
     // Nanti ganti require ini dengan path fotomu sendiri, misalnya require('../assets/images/foto1.png')
-    image: require("../assets/images/asistant.png"),
+    image: require("../assets/images/onboard-04.png"),
   },
   {
     id: "2",
@@ -30,7 +30,7 @@ const ONBOARDING_DATA = [
     description:
       "We analyze your emotions and provide you with personalized insights and recommendations.",
     // Foto untuk halaman 2
-    image: require("../assets/images/asistant.png"),
+    image: require("../assets/images/onboard-02.png"),
   },
   {
     id: "3",
@@ -38,7 +38,7 @@ const ONBOARDING_DATA = [
     description:
       "Get real-time suggestions to manage stress, sleep better, and build healthier habits.",
     // Foto untuk halaman 3
-    image: require("../assets/images/asistant.png"),
+    image: require("../assets/images/onboard-01.png"),
   },
 ];
 
@@ -74,7 +74,10 @@ export default function OnboardingScreen() {
           {/* Menampilkan gambar sesuai slide yang aktif */}
           <Image
             source={item.image}
-            style={styles.graphicImage}
+            style={[
+              styles.graphicImage,
+              (item.id === "1" || item.id === "2") && styles.graphicImageLarge,
+            ]}
             resizeMode="contain"
           />
         </View>
@@ -165,6 +168,10 @@ const styles = StyleSheet.create({
   graphicImage: {
     width: "80%",
     height: "60%",
+  },
+  graphicImageLarge: {
+    width: "200%",
+    height: "140%",
   },
   cardArea: {
     flex: 1,
