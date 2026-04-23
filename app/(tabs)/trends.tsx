@@ -15,63 +15,66 @@ import { useSafeAreaInsets } from 'react-native-safe-area-context';
 import { C } from '../../constants/Colors';
 import { Card, LineChart, MultiLineChart, Pill } from '../../components/UI';
 import Icon from '../../components/Icon';
+import {
+  LAST_7_DAYS,
+  LAST_14_DAYS,
+  calcRiskScore,
+  MOOD_SCORE,
+} from '../../constants/mockData';
 
 type TimeRange = 'weekly' | 'monthly';
 type Metric = 'mood' | 'risk' | 'sleep';
 
-const MOCK_DATA = {
+// ── Chart data derived from real mock check-ins ──────────────────────────────
+const DAYS_7 = [...LAST_7_DAYS].reverse(); // oldest → newest for chart
+const DAYS_14 = [...LAST_14_DAYS].reverse();
+
+const CHART_DATA = {
   weekly: {
-    mood: [60, 75, 65, 80, 85, 90, 88],
-    risk: [40, 30, 35, 20, 15, 10, 15],
-    sleep: [6, 7, 6.5, 8, 7.5, 8.5, 8],
-    labels: ['Mon', 'Tue', 'Wed', 'Thu', 'Fri', 'Sat', 'Sun'],
+    mood:   DAYS_7.map(d => Math.round((MOOD_SCORE[d.mood] / 10) * 100)),
+    risk:   DAYS_7.map(calcRiskScore),
+    sleep:  DAYS_7.map(d => d.sleep * 10), // normalise to 0-100 scale
+    labels: DAYS_7.map(d => {
+      const day = new Date(d.date).toLocaleDateString('en-US', { weekday: 'short' });
+      return day.slice(0, 2);
+    }),
   },
   monthly: {
-    mood: [65, 68, 70, 75, 72, 80, 85, 88, 85, 82, 80, 85, 90, 88, 85, 80, 82, 85, 88, 90, 92, 88, 85, 80, 82, 85, 88, 90, 92, 95],
-    risk: [30, 28, 25, 20, 22, 18, 15, 12, 15, 18, 20, 15, 10, 12, 15, 20, 18, 15, 12, 10, 8, 12, 15, 20, 18, 15, 12, 10, 8, 5],
-    sleep: [7, 6.5, 7, 7.5, 8, 7.5, 7, 6.5, 7, 7.5, 8, 8.5, 8, 7.5, 7, 6.5, 7, 7.5, 8, 7.5, 7, 6.5, 7, 7.5, 8, 8.5, 8, 7.5, 8, 8.5],
-    labels: ['W1', 'W2', 'W3', 'W4'], // We can show fewer labels for monthly
-  }
+    mood:   DAYS_14.map(d => Math.round((MOOD_SCORE[d.mood] / 10) * 100)),
+    risk:   DAYS_14.map(calcRiskScore),
+    sleep:  DAYS_14.map(d => d.sleep * 10),
+    labels: DAYS_14
+      .filter((_, i) => i % 3 === 0)
+      .map(d => new Date(d.date).toLocaleDateString('en-US', { month: 'short', day: 'numeric' })),
+  },
 };
 
-const CHECKIN_HISTORY = [
-  {
-    id: '1',
-    date: 'Today, 8:00 AM',
-    mood: 88,
-    sleep: 8,
-    risk: 'Low',
-    note: 'Woke up feeling refreshed after a full 8 hours of sleep. Looking forward to the weekend.',
-    tags: ['Exercise', 'Reading'],
-  },
-  {
-    id: '2',
-    date: 'Yesterday, 9:30 PM',
-    mood: 75,
-    sleep: 6.5,
-    risk: 'Medium',
-    note: 'Long day at work, felt a bit stressed in the afternoon but a short walk helped.',
-    tags: ['Work', 'Stress'],
-  },
-  {
-    id: '3',
-    date: '2 Days Ago, 7:15 AM',
-    mood: 85,
-    sleep: 7.5,
-    risk: 'Low',
-    note: 'Morning yoga session set a great tone for the day. Feeling productive.',
-    tags: ['Yoga', 'Productive'],
-  },
-  {
-    id: '4',
-    date: '3 Days Ago, 8:45 PM',
-    mood: 60,
-    sleep: 5,
-    risk: 'High',
-    note: 'Did not sleep well last night. Struggled to concentrate all day. Need to rest.',
-    tags: ['Tired', 'Anxiety'],
-  },
+// ── History list from real mock check-ins ─────────────────────────────────────
+const DAY_LABELS = [
+  'Today', 'Yesterday', '2 Days Ago', '3 Days Ago',
+  '4 Days Ago', '5 Days Ago', '6 Days Ago',
+  '1 Week Ago', '8 Days Ago', '9 Days Ago', '10 Days Ago',
+  '11 Days Ago', '12 Days Ago', '13 Days Ago',
 ];
+
+const MOOD_EMOJI: Record<string, string> = {
+  Sad: '😔', Neutral: '😐', Good: '😊', Great: '🤩', Calm: '🧘',
+};
+
+const CHECKIN_HISTORY = LAST_14_DAYS.map((entry, i) => {
+  const risk = calcRiskScore(entry);
+  const riskLabel = risk < 35 ? 'Low' : risk < 60 ? 'Medium' : 'High';
+  return {
+    id: String(i + 1),
+    date: DAY_LABELS[i] ?? entry.date,
+    mood: Math.round((MOOD_SCORE[entry.mood] / 10) * 100),
+    moodEmoji: MOOD_EMOJI[entry.mood],
+    sleep: entry.sleep,
+    risk: riskLabel,
+    note: entry.note ?? '',
+    tags: [entry.act],
+  };
+});
 
 export default function TrendsScreen() {
   const insets = useSafeAreaInsets();
@@ -97,13 +100,11 @@ export default function TrendsScreen() {
   // const [metric, setMetric] = useState<Metric>('mood');
 
   const seriesData = [
-    { data: MOCK_DATA[timeRange].mood, color: C.mint, label: 'Mood' },
-    { data: MOCK_DATA[timeRange].risk, color: C.coral, label: 'Risk' },
-    { data: MOCK_DATA[timeRange].sleep, color: C.purpleLight, label: 'Sleep' },
+    { data: CHART_DATA[timeRange].mood,  color: C.mint,        label: 'Mood' },
+    { data: CHART_DATA[timeRange].risk,  color: C.coral,       label: 'Risk' },
+    { data: CHART_DATA[timeRange].sleep, color: C.purpleLight, label: 'Sleep' },
   ];
-  const currentLabels = timeRange === 'weekly' 
-    ? MOCK_DATA.weekly.labels 
-    : MOCK_DATA.monthly.labels;
+  const currentLabels = CHART_DATA[timeRange].labels;
 
   const metricConfig = {
     mood: { label: 'Mood Score', color: C.mint },
@@ -181,7 +182,7 @@ export default function TrendsScreen() {
           return (
           <Card key={item.id} style={{ marginBottom: 12, padding: 16 }}>
             <View style={styles.historyHeader}>
-              <Text style={styles.historyDate}>{item.date}</Text>
+              <Text style={styles.historyDate}>{item.moodEmoji} {item.date}</Text>
               <View style={styles.historyMetrics}>
                 <View style={styles.smallMetric}>
                   <Icon n="sparkle" s={12} c={C.mint} />
