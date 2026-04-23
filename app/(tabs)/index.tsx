@@ -86,16 +86,17 @@ export default function HomeScreen() {
                 width: 350,
                 height: 350,
                 opacity: 1,
-                zIndex: -1, // Penting untuk Android agar tidak menutupi teks
               }}
               resizeMode="contain"
             />
-            <Text style={styles.greeting}>
-              Good Morning,{"\n"}how are you today?
-            </Text>
-            <Text style={styles.greetingSub}>
-              Your mental sanctuary {"\n"} is ready for the day.
-            </Text>
+            <View style={{ zIndex: 1, elevation: 1, position: "relative" }}>
+              <Text style={styles.greeting}>
+                Good Morning,{"\n"}how are you today?
+              </Text>
+              <Text style={styles.greetingSub}>
+                Your mental sanctuary {"\n"} is ready for the day.
+              </Text>
+            </View>
           </View>
         </LinearGradient>
 
