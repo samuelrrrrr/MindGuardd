@@ -164,7 +164,7 @@ export default function HomeScreen() {
             {/* Daily Check-in Card */}
             <TouchableOpacity
               style={styles.dailyCheckinCard}
-              onPress={() => router.push("/screens/checkin")}
+              onPress={() => router.push("/(tabs)/checkin")}
               activeOpacity={0.85}
             >
               <Image
