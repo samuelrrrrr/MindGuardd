@@ -5,6 +5,7 @@ import {
   ScrollView,
   StyleSheet,
   Text,
+  TextInput,
   TouchableOpacity,
   View,
 } from "react-native";
@@ -18,7 +19,7 @@ export default function CheckInScreen() {
   const [mood, setMood] = useState("Good");
   const [sleep, setSleep] = useState(8);
   const [stress, setStress] = useState(3);
-  const [act, setAct] = useState("Rest");
+  const [activityText, setActivityText] = useState("");
   const [done, setDone] = useState(false);
 
   const moods = [
@@ -147,38 +148,39 @@ export default function CheckInScreen() {
           <Text style={[styles.sectionLabel, { marginBottom: 12 }]}>
             Activities
           </Text>
-          <View style={styles.actGrid}>
-            {acts.map((a) => (
-              <TouchableOpacity
-                key={a.l}
-                style={[
-                  styles.actBtn,
-                  act === a.l && {
-                    backgroundColor: C.purplePale,
-                    borderColor: C.purple,
-                  },
-                ]}
-                onPress={() => setAct(a.l)}
-                activeOpacity={0.75}
-              >
-                <Icon n={a.i} s={20} c={act === a.l ? C.purple : C.muted} />
-                <Text
-                  style={[
-                    styles.actLabel,
-                    { color: act === a.l ? C.purple : C.sub },
-                  ]}
-                >
-                  {a.l}
-                </Text>
-              </TouchableOpacity>
-            ))}
-          </View>
+          <TextInput
+            style={styles.textInput}
+            placeholder="What did you do today?"
+            placeholderTextColor={C.muted}
+            value={activityText}
+            onChangeText={setActivityText}
+            multiline
+            textAlignVertical="top"
+          />
         </Card>
 
         {done ? (
-          <View style={styles.savedRow}>
-            <Icon n="check" s={20} c={C.mint} />
-            <Text style={styles.savedText}>Check-in saved!</Text>
+          <View style={{ gap: 16 }}>
+            <View style={styles.savedRow}>
+              <Icon n="check" s={20} c={C.mint} />
+              <Text style={styles.savedText}>Check-in saved!</Text>
+            </View>
+            <LinearGradient
+              colors={[C.navyDeep, "#2d2b8e"]}
+              style={{ borderRadius: 22, padding: 24, marginBottom: 16 }}
+            >
+              <View style={styles.aiHeader}>
+                <View style={styles.aiIcon}>
+                  <Icon n="sparkle" s={13} c={C.purpleLight} />
+                </View>
+                <Text style={styles.aiLabel}>AI Insight</Text>
+              </View>
+              <Text style={styles.aiTitle}>
+                {activityText.trim().length > 0 
+                  ? `Focusing on "${activityText}" while feeling ${mood} and having a stress level of ${stress}/10 suggests you might need to ${stress > 5 ? 'take a break' : 'keep up the good work'}. Try to maintain your sleep at ${sleep} hours.` 
+                  : `With a stress level of ${stress}/10 and a ${mood} mood, consider adding an activity here next time to help me understand what's influencing your day!`}
+              </Text>
+            </LinearGradient>
           </View>
         ) : (
           <TouchableOpacity activeOpacity={0.8} onPress={() => setDone(true)}>
@@ -255,6 +257,44 @@ const styles = StyleSheet.create({
     paddingVertical: 18,
   },
   savedText: { fontSize: 16, fontWeight: "800", color: C.mint },
+
+  textInput: {
+    minHeight: 100,
+    backgroundColor: C.bg,
+    borderRadius: 16,
+    padding: 16,
+    fontSize: 15,
+    color: C.text,
+  },
+
+  aiHeader: {
+    flexDirection: "row",
+    alignItems: "center",
+    gap: 7,
+    marginBottom: 10,
+  },
+  aiIcon: {
+    width: 24,
+    height: 24,
+    borderRadius: 8,
+    backgroundColor: "rgba(162,155,254,0.25)",
+    alignItems: "center",
+    justifyContent: "center",
+  },
+  aiLabel: {
+    fontSize: 11,
+    fontWeight: "700",
+    color: C.purpleLight,
+    letterSpacing: 1,
+    textTransform: "uppercase",
+  },
+  aiTitle: {
+    fontSize: 16,
+    fontWeight: "800",
+    color: "#fff",
+    lineHeight: 24,
+    marginBottom: 4,
+  },
 
   saveBtn: {
     borderRadius: 99,

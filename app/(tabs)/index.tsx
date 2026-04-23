@@ -27,206 +27,235 @@ export default function HomeScreen() {
 
   return (
     <>
-    <ScrollView
-      style={styles.scroll}
-      contentContainerStyle={{ paddingBottom: 30 }}
-      showsVerticalScrollIndicator={false}
-    >
-      {/* HERO */}
-      <LinearGradient
-        colors={[C.navyDeep, C.navy, "#2d3182"]}
-        start={{ x: 0.1, y: 0 }}
-        end={{ x: 0.9, y: 1 }}
-        style={[styles.hero, { paddingTop: insets.top + 8 }]}
+      <ScrollView
+        style={styles.scroll}
+        contentContainerStyle={{ paddingBottom: 30 }}
+        showsVerticalScrollIndicator={false}
       >
-        {/* Top bar */}
-        <View style={styles.topBar}>
-          <View style={styles.avatarRow}>
-            <LinearGradient
-              colors={[C.purpleLight, C.purple]}
-              style={styles.avatar}
-            >
-              <Image 
-                source={require("../../assets/images/asistant.png")} 
-                style={styles.avatarInner} 
-              />
-            </LinearGradient>
-            <View>
-              <Text style={styles.welcomeText}>Welcome back</Text>
-              <Text style={styles.nameText}>Sarah ✨</Text>
-            </View>
-          </View>
-          <TouchableOpacity style={styles.bellBtn} onPress={() => setShowNotifications(true)}>
-            <Icon n="bell" s={18} c="rgba(255,255,255,0.9)" />
-            <View style={styles.bellDot} />
-          </TouchableOpacity>
-        </View>
-
-        {/* Greeting */}
-        <View style={styles.greetingBox}>
-          <Image
-            source={require("../../assets/images/asistant.png")}
-            style={{
-              position: "absolute",
-              right: -35,
-              bottom: -50,
-              width: 170,
-              height: 170,
-              opacity: 100,
-              zIndex: -1,
-            }}
-          />
-          <Text style={styles.greeting}>
-            Good Morning,{"\n"}how are you today?
-          </Text>
-          <Text style={styles.greetingSub}>
-            Your mental sanctuary is ready for the day.
-          </Text>
-        </View>
-      </LinearGradient>
-
-      {/*DAILY PROGRESS*/}
-      <View style={styles.content}>
-        <Card style={styles.card}>
-          <Text style={styles.sectionLabel}>Daily Progress</Text>
-          <View
-            style={{
-              flexDirection: "row",
-              justifyContent: "space-around",
-              alignItems: "center",
-              paddingVertical: 10,
-              paddingTop: 24,
-            }}
-          >
-            <View style={{ alignItems: "center" }}>
-              <Ring value={24} color={C.mint} sub="MOOD" />
-            </View>
-            <View style={{ alignItems: "center" }}>
-              <Ring value={24} color={C.red} sub="RISK" />
-            </View>
-            <View style={{ alignItems: "center" }}>
-              <Ring value={24} color={C.purpleLight} sub="SLEEP" />
-            </View>
-          </View>
-        </Card>
-
-        {/* AI INSIGHT */}
+        {/* HERO */}
         <LinearGradient
-          colors={[C.navyDeep, "#2d2b8e"]}
-          style={[styles.card, { borderRadius: 22, padding: 24 }]}
+          colors={[C.navyDeep, C.navy, "#2d3182"]}
+          start={{ x: 0.1, y: 0 }}
+          end={{ x: 0.9, y: 1 }}
+          style={[styles.hero, { paddingTop: insets.top + 8 }]}
         >
-          <View style={styles.aiHeader}>
-            <View style={styles.aiIcon}>
-              <Icon n="sparkle" s={13} c={C.purpleLight} />
+          {/* Top bar */}
+          <View style={styles.topBar}>
+            <View style={styles.avatarRow}>
+              <LinearGradient
+                colors={[C.purpleLight, C.purple]}
+                style={styles.avatar}
+              >
+                <Image
+                  source={require("../../assets/images/asistant.png")}
+                  style={styles.avatarInner}
+                />
+              </LinearGradient>
+              <View>
+                <Text style={styles.welcomeText}>Welcome back</Text>
+                <Text style={styles.nameText}>Sarah ✨</Text>
+              </View>
             </View>
-            <Text style={styles.aiLabel}>AI Insight</Text>
+            <TouchableOpacity
+              style={styles.bellBtn}
+              onPress={() => setShowNotifications(true)}
+            >
+              <Icon n="bell" s={18} c="rgba(255,255,255,0.9)" />
+              <View style={styles.bellDot} />
+            </TouchableOpacity>
           </View>
-          <Text style={styles.aiTitle}>
-            Focus on your breathing for just 3 minutes to lower cortisol.
-          </Text>
-          <Text style={styles.aiQuote}>
-            "Calm is a superpower that starts within."
-          </Text>
-          <TouchableOpacity
-            style={styles.aiBtn}
-            onPress={() => router.push("/screens/insights")}
-          >
-            <Text style={[styles.aiBtnText, { color: C.purpleLight }]}>
-              View full insight
+
+          {/* Greeting */}
+          <View style={styles.greetingBox}>
+            <Image
+              source={require("../../assets/images/asistant.png")}
+              style={{
+                position: "absolute",
+                right: -35,
+                bottom: -50,
+                width: 170,
+                height: 170,
+                opacity: 100,
+                zIndex: -1,
+              }}
+            />
+            <Text style={styles.greeting}>
+              Good Morning,{"\n"}how are you today?
             </Text>
-            <Icon n="arrow" s={13} c={C.purpleLight} />
-          </TouchableOpacity>
+            <Text style={styles.greetingSub}>
+              Your mental sanctuary is ready for the day.
+            </Text>
+          </View>
         </LinearGradient>
 
-        {/* QUICK ACTIONS */}
-        <View>
-          <Text style={[styles.sectionLabel, { marginBottom: 12 }]}>
-            Quick Actions
-          </Text>
-          <View style={styles.quickActions}>
+        {/*DAILY PROGRESS*/}
+        <View style={styles.content}>
+          <Card style={styles.card}>
+            <Text style={styles.sectionLabel}>Daily Progress</Text>
+            <View
+              style={{
+                flexDirection: "row",
+                justifyContent: "space-around",
+                alignItems: "center",
+                paddingVertical: 10,
+                paddingTop: 24,
+              }}
+            >
+              <View style={{ alignItems: "center" }}>
+                <Ring value={24} color={C.mint} sub="MOOD" />
+              </View>
+              <View style={{ alignItems: "center" }}>
+                <Ring value={24} color={C.red} sub="RISK" />
+              </View>
+              <View style={{ alignItems: "center" }}>
+                <Ring value={24} color={C.purpleLight} sub="SLEEP" />
+              </View>
+            </View>
+          </Card>
+
+          {/* AI INSIGHT */}
+          <LinearGradient
+            colors={[C.navyDeep, "#2d2b8e"]}
+            style={[styles.card, { borderRadius: 22, padding: 24 }]}
+          >
+            <View style={styles.aiHeader}>
+              <View style={styles.aiIcon}>
+                <Icon n="sparkle" s={13} c={C.purpleLight} />
+              </View>
+              <Text style={styles.aiLabel}>AI Insight</Text>
+            </View>
+            <Text style={styles.aiTitle}>
+              Focus on your breathing for just 3 minutes to lower cortisol.
+            </Text>
+            <Text style={styles.aiQuote}>
+              "Calm is a superpower that starts within."
+            </Text>
+            <TouchableOpacity
+              style={styles.aiBtn}
+              onPress={() => router.push("/screens/insights")}
+            >
+              <Text style={[styles.aiBtnText, { color: C.purpleLight }]}>
+                View full insight
+              </Text>
+              <Icon n="arrow" s={13} c={C.purpleLight} />
+            </TouchableOpacity>
+          </LinearGradient>
+
+          {/* QUICK ACTIONS */}
+          <View>
+            <Text style={[styles.sectionLabel, { marginBottom: 12 }]}>
+              Quick Actions
+            </Text>
+
+            {/* Daily Check-in Card */}
+            <TouchableOpacity
+              style={styles.dailyCheckinCard}
+              onPress={() => router.push("/screens/checkin")}
+              activeOpacity={0.85}
+            >
+              <Image
+                source={require("../../assets/images/asistant.png")}
+                style={styles.dailyCheckinBg}
+              />
+              <LinearGradient
+                colors={["transparent", "rgba(0,0,0,0.8)"]}
+                style={styles.dailyCheckinOverlay}
+              />
+              <View style={styles.dailyCheckinContent}>
+                <Text style={styles.dailyCheckinTitle}>Daily Check-in</Text>
+                <Text style={styles.dailyCheckinSub}>
+                  How are you feeling right now?
+                </Text>
+              </View>
+            </TouchableOpacity>
+
+            <View style={styles.quickActions}>
+              {[
+                {
+                  label: "Log Emotion",
+                  sub: "Quick entry",
+                  icon: "heart",
+                  color: C.coral,
+                  bg: C.coralLight,
+                  screen: "/screens/emotion",
+                },
+                {
+                  label: "Insight",
+                  sub: "AI analysis",
+                  icon: "sparkle",
+                  color: C.amber,
+                  bg: C.amberLight,
+                  screen: "/screens/insights",
+                },
+              ].map((a) => (
+                <TouchableOpacity
+                  key={a.label}
+                  style={styles.quickBtn}
+                  onPress={() => router.push(a.screen as any)}
+                  activeOpacity={0.75}
+                >
+                  <View style={[styles.quickIcon, { backgroundColor: a.bg }]}>
+                    <Icon n={a.icon} s={22} c={a.color} />
+                  </View>
+                  <Text style={styles.quickLabel}>{a.label}</Text>
+                  <Text style={styles.quickSub}>{a.sub}</Text>
+                </TouchableOpacity>
+              ))}
+            </View>
+          </View>
+
+          {/* EXTRA SHORTCUTS */}
+          <View style={styles.shortcutGrid}>
             {[
               {
-                label: "Check In",
-                sub: "Daily log",
-                icon: "check",
-                color: C.purple,
-                bg: C.purplePale,
-                screen: "/screens/checkin",
+                label: "Risk Analysis",
+                icon: "shield",
+                color: C.navy,
+                bg: "#eaecf8",
+                screen: "/screens/risk",
               },
               {
-                label: "Log Emotion",
-                sub: "Quick entry",
-                icon: "heart",
-                color: C.coral,
-                bg: C.coralLight,
-                screen: "/screens/emotion",
-              },
-              {
-                label: "Insight",
-                sub: "AI analysis",
-                icon: "sparkle",
-                color: C.amber,
-                bg: C.amberLight,
-                screen: "/screens/insights",
+                label: "Breathing",
+                icon: "wind",
+                color: "#3b82f6",
+                bg: "#eff6ff",
+                screen: "/screens/breathing",
               },
             ].map((a) => (
               <TouchableOpacity
                 key={a.label}
-                style={styles.quickBtn}
+                style={styles.shortcutBtn}
                 onPress={() => router.push(a.screen as any)}
                 activeOpacity={0.75}
               >
-                <View style={[styles.quickIcon, { backgroundColor: a.bg }]}>
-                  <Icon n={a.icon} s={22} c={a.color} />
+                <View style={[styles.shortcutIcon, { backgroundColor: a.bg }]}>
+                  <Icon n={a.icon} s={18} c={a.color} />
                 </View>
-                <Text style={styles.quickLabel}>{a.label}</Text>
-                <Text style={styles.quickSub}>{a.sub}</Text>
+                <Text style={styles.shortcutLabel}>{a.label}</Text>
               </TouchableOpacity>
             ))}
           </View>
         </View>
-
-        {/* EXTRA SHORTCUTS */}
-        <View style={styles.shortcutGrid}>
-          {[
-            {
-              label: "Risk Analysis",
-              icon: "shield",
-              color: C.navy,
-              bg: "#eaecf8",
-              screen: "/screens/risk",
-            },
-            {
-              label: "Breathing",
-              icon: "wind",
-              color: "#3b82f6",
-              bg: "#eff6ff",
-              screen: "/screens/breathing",
-            },
-          ].map((a) => (
-            <TouchableOpacity
-              key={a.label}
-              style={styles.shortcutBtn}
-              onPress={() => router.push(a.screen as any)}
-              activeOpacity={0.75}
-            >
-              <View style={[styles.shortcutIcon, { backgroundColor: a.bg }]}>
-                <Icon n={a.icon} s={18} c={a.color} />
-              </View>
-              <Text style={styles.shortcutLabel}>{a.label}</Text>
-            </TouchableOpacity>
-          ))}
-        </View>
-      </View>
-    </ScrollView>
+      </ScrollView>
 
       {/* NOTIFICATION MODAL */}
-      <Modal visible={showNotifications} transparent={true} animationType="fade">
-        <Pressable style={styles.modalOverlay} onPress={() => setShowNotifications(false)}>
-          <Pressable style={[styles.notificationBubble, { top: insets.top + 60 }]}>
+      <Modal
+        visible={showNotifications}
+        transparent={true}
+        animationType="fade"
+      >
+        <Pressable
+          style={styles.modalOverlay}
+          onPress={() => setShowNotifications(false)}
+        >
+          <Pressable
+            style={[styles.notificationBubble, { top: insets.top + 60 }]}
+          >
             <Text style={styles.notifHeader}>Notifications</Text>
             <View style={styles.notifItem}>
-              <View style={[styles.notifIcon, { backgroundColor: C.mintLight }]}>
+              <View
+                style={[styles.notifIcon, { backgroundColor: C.mintLight }]}
+              >
                 <Icon n="check" s={14} c={C.mint} />
               </View>
               <View style={{ flex: 1 }}>
@@ -235,7 +264,9 @@ export default function HomeScreen() {
               </View>
             </View>
             <View style={[styles.notifItem, { marginBottom: 0 }]}>
-              <View style={[styles.notifIcon, { backgroundColor: C.purplePale }]}>
+              <View
+                style={[styles.notifIcon, { backgroundColor: C.purplePale }]}
+              >
                 <Icon n="sparkle" s={14} c={C.purple} />
               </View>
               <View style={{ flex: 1 }}>
@@ -499,5 +530,41 @@ const styles = StyleSheet.create({
     fontSize: 10,
     color: C.sub,
     marginTop: 2,
+  },
+
+  dailyCheckinCard: {
+    height: 140,
+    borderRadius: 22,
+    overflow: "hidden",
+    marginBottom: 12,
+    backgroundColor: C.navy, // fallback color
+  },
+  dailyCheckinBg: {
+    position: "absolute",
+    width: "100%",
+    height: "100%",
+    resizeMode: "cover",
+    opacity: 0.8,
+  },
+  dailyCheckinOverlay: {
+    position: "absolute",
+    width: "100%",
+    height: "100%",
+  },
+  dailyCheckinContent: {
+    flex: 1,
+    padding: 20,
+    justifyContent: "flex-end",
+    alignItems: "flex-start",
+  },
+  dailyCheckinTitle: {
+    fontSize: 20,
+    fontWeight: "800",
+    color: "#fff",
+    marginBottom: 4,
+  },
+  dailyCheckinSub: {
+    fontSize: 13,
+    color: "rgba(255,255,255,0.9)",
   },
 });
