@@ -7,6 +7,7 @@ import {
   TextInput,
   TouchableOpacity,
   View,
+  ActivityIndicator,
 } from "react-native";
 import { useSafeAreaInsets } from "react-native-safe-area-context";
 import Icon from "../../components/Icon";
@@ -25,6 +26,7 @@ export default function CheckInScreen() {
   const [stressIndex, setStressIndex] = useState(2);
   const [activityText, setActivityText] = useState("");
   const [done, setDone] = useState(false);
+  const [isLoading, setIsLoading] = useState(false);
   const [aiInsight, setAiInsight] = useState<AIInsight | null>(null);
 
   const emotes = ["face-1", "face-2", "face-3", "face-4", "face-5"];
@@ -48,6 +50,7 @@ export default function CheckInScreen() {
   const stressScore = stressScoreMapping[stressIndex];
 
   const handleSave = async () => {
+    setIsLoading(true);
     const newCheckIn = await saveCheckIn({ mood, sleep: sleepHours, stress: stressScore, act: activityText || "None" });
     if (newCheckIn) {
       const history = await getCheckIns();
@@ -58,6 +61,7 @@ export default function CheckInScreen() {
       const insight = await generateOpenAIInsight(apiKey, history, risk, patterns);
       setAiInsight(insight);
     }
+    setIsLoading(false);
     setDone(true);
   };
 
@@ -229,9 +233,13 @@ export default function CheckInScreen() {
             </LinearGradient>
           </View>
         ) : (
-          <TouchableOpacity activeOpacity={0.8} onPress={handleSave}>
-            <LinearGradient colors={[C.navy, C.purple]} style={styles.saveBtn}>
-              <Text style={styles.saveBtnText}>Save Check-In</Text>
+          <TouchableOpacity activeOpacity={0.8} onPress={handleSave} disabled={isLoading}>
+            <LinearGradient colors={[C.navy, C.purple]} style={[styles.saveBtn, isLoading && { opacity: 0.8 }]}>
+              {isLoading ? (
+                <ActivityIndicator color="#fff" size="small" />
+              ) : (
+                <Text style={styles.saveBtnText}>Save Check-In</Text>
+              )}
             </LinearGradient>
           </TouchableOpacity>
         )}
