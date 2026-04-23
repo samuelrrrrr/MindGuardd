@@ -40,8 +40,8 @@ export const saveCheckIn = async (data: { mood: string, sleep: number, stress: n
       mood: getMoodScale(data.mood),
       sleepHours: data.sleep,
       stress: getStressScale(data.stress),
-      activity: data.act,
-      notes: `Felt ${data.mood.toLowerCase()}, focusing on ${data.act.toLowerCase()}.`,
+      activity: data.act && data.act.length > 20 ? 'Journaling' : data.act,
+      notes: !data.act || data.act === 'None' ? `Felt ${data.mood.toLowerCase()}.` : data.act,
     };
 
     const updatedCheckIns = [newCheckIn, ...existing];

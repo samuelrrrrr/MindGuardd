@@ -49,18 +49,6 @@ const CHART_DATA = {
   },
 };
 
-// ── History list from real mock check-ins ─────────────────────────────────────
-const DAY_LABELS = [
-  'Today', 'Yesterday', '2 Days Ago', '3 Days Ago',
-  '4 Days Ago', '5 Days Ago', '6 Days Ago',
-  '1 Week Ago', '8 Days Ago', '9 Days Ago', '10 Days Ago',
-  '11 Days Ago', '12 Days Ago', '13 Days Ago',
-];
-
-const MOOD_EMOJI: Record<string, string> = {
-  Sad: '😔', Neutral: '😐', Good: '😊', Great: '🤩', Calm: '🧘', Excellent: '🤩',
-};
-
 const NUM_TO_MOOD: Record<number, string> = {
   1: 'Sad', 2: 'Neutral', 3: 'Calm', 4: 'Good', 5: 'Great',
 };
@@ -68,11 +56,17 @@ const NUM_TO_MOOD: Record<number, string> = {
 const CHECKIN_HISTORY = LAST_14_DAYS.map((entry, i) => {
   const risk = calcRiskScore(entry);
   const riskLabel = risk < 35 ? 'Low' : risk < 60 ? 'Medium' : 'High';
+  
+  // Format to "Thu, Apr 23, 12:53 PM"
+  const formattedDate = new Date(entry.date).toLocaleString('en-US', { 
+    weekday: 'short', month: 'short', day: 'numeric', 
+    hour: 'numeric', minute: '2-digit' 
+  });
+
   return {
     id: String(i + 1),
-    date: DAY_LABELS[i] ?? entry.date,
+    date: formattedDate,
     mood: Math.round((MOOD_SCORE[entry.mood] / 10) * 100),
-    moodEmoji: MOOD_EMOJI[entry.mood],
     sleep: entry.sleep,
     risk: riskLabel,
     note: entry.note ?? '',
@@ -84,6 +78,7 @@ export default function TrendsScreen() {
   const insets = useSafeAreaInsets();
   const [timeRange, setTimeRange] = useState<TimeRange>('weekly');
   const [history, setHistory] = useState<CheckInEntry[]>([]);
+  const [page, setPage] = useState(1);
 
   useFocusEffect(
     useCallback(() => {
@@ -181,15 +176,14 @@ export default function TrendsScreen() {
         <Text style={styles.sectionLabel}>Daily Check-in History</Text>
 
         {/* HISTORY LIST */}
-        {history.map((item) => {
+        {history.slice((page - 1) * 5, page * 5).map((item) => {
           const isReal = item.stress !== undefined;
           const riskCat = isReal ? computeRiskScore(item).category : (item as any).risk;
-          const displayEmoji = (item as any).moodEmoji || MOOD_EMOJI[NUM_TO_MOOD[item.mood as number]] || '😐';
           const displayMood = isReal ? `${item.mood}/5` : `${(item as any).mood}%`;
           return (
           <Card key={item.id} style={{ marginBottom: 12, padding: 16 }}>
             <View style={styles.historyHeader}>
-              <Text style={styles.historyDate}>{displayEmoji} {item.date}</Text>
+              <Text style={styles.historyDate}>{item.date}</Text>
               <View style={styles.historyMetrics}>
                 <View style={styles.smallMetric}>
                   <Icon n="sparkle" s={12} c={C.mint} />
@@ -205,15 +199,17 @@ export default function TrendsScreen() {
             <Text style={styles.historyNote}>{item.notes || (item as any).note}</Text>
             
             <View style={styles.tagsRow}>
-              {item.activity ? (
+              {item.activity && item.activity.length <= 25 ? (
                 <View style={styles.tagBadge}>
                   <Text style={styles.tagText}>{item.activity}</Text>
                 </View>
-              ) : (item as any).tags?.map((t: string) => (
-                <View key={t} style={styles.tagBadge}>
-                  <Text style={styles.tagText}>{t}</Text>
-                </View>
-              ))}
+              ) : (!item.activity && (item as any).tags) ? (item as any).tags?.map((t: string) => (
+                t.length <= 25 ? (
+                  <View key={t} style={styles.tagBadge}>
+                    <Text style={styles.tagText}>{t}</Text>
+                  </View>
+                ) : null
+              )) : null}
               <View style={[styles.tagBadge, { backgroundColor: riskCat === 'Low' ? C.mintLight : riskCat === 'Medium' ? C.amberLight : C.coralLight }]}>
                 <Text style={[styles.tagText, { color: riskCat === 'Low' ? C.mint : riskCat === 'Medium' ? C.amber : C.coral }]}>
                   Risk: {riskCat}
@@ -222,6 +218,26 @@ export default function TrendsScreen() {
             </View>
           </Card>
         )})}
+
+        {history.length > 5 && (
+          <View style={{ flexDirection: 'row', justifyContent: 'space-between', alignItems: 'center', marginTop: 8, marginBottom: 24 }}>
+            <TouchableOpacity 
+              disabled={page === 1} 
+              onPress={() => setPage(p => Math.max(1, p - 1))}
+              style={{ padding: 12, opacity: page === 1 ? 0.5 : 1 }}
+            >
+              <Text style={{ color: C.text, fontWeight: 'bold' }}>Previous</Text>
+            </TouchableOpacity>
+            <Text style={{ color: C.sub, fontWeight: '600' }}>Page {page} of {Math.ceil(history.length / 5)}</Text>
+            <TouchableOpacity 
+              disabled={page === Math.ceil(history.length / 5)} 
+              onPress={() => setPage(p => Math.min(Math.ceil(history.length / 5), p + 1))}
+              style={{ padding: 12, opacity: page === Math.ceil(history.length / 5) ? 0.5 : 1 }}
+            >
+              <Text style={{ color: C.text, fontWeight: 'bold' }}>Next</Text>
+            </TouchableOpacity>
+          </View>
+        )}
 
       </View>
     </ScrollView>
