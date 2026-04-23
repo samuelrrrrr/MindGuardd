@@ -86,7 +86,9 @@ export default function HomeScreen() {
                 width: 350,
                 height: 350,
                 opacity: 1,
+                zIndex: -1, // Penting untuk Android agar tidak menutupi teks
               }}
+              resizeMode="contain"
             />
             <Text style={styles.greeting}>
               Good Morning,{"\n"}how are you today?

@@ -138,10 +138,12 @@ export default function JournalChatScreen() {
         ]}
       >
         {!isUser && (
-          <Image
-            source={{ uri: "https://i.pravatar.cc/100?img=5" }}
-            style={styles.botAvatar}
-          />
+          <View style={styles.botAvatarWrapper}>
+            <Image
+              source={require("../../assets/images/onboard-03.png")}
+              style={styles.botAvatarImage}
+            />
+          </View>
         )}
         <View
           style={[styles.msgBubble, isUser ? styles.msgUser : styles.msgBot]}
@@ -172,10 +174,12 @@ export default function JournalChatScreen() {
       >
         <View style={styles.headerContent}>
           <View style={styles.headerAvatarContainer}>
-            <Image
-              source={{ uri: "https://i.pravatar.cc/100?img=5" }}
-              style={styles.headerAvatar}
-            />
+            <View style={styles.headerAvatarWrapper}>
+              <Image
+                source={require("../../assets/images/onboard-03.png")}
+                style={styles.headerAvatarImage}
+              />
+            </View>
             <View style={styles.onlineDot} />
           </View>
           <View>
@@ -198,10 +202,12 @@ export default function JournalChatScreen() {
       {/* TYPING INDICATOR */}
       {isTyping && (
         <View style={styles.typingContainer}>
-          <Image
-            source={{ uri: "https://i.pravatar.cc/100?img=5" }}
-            style={styles.botAvatar}
-          />
+          <View style={styles.botAvatarWrapper}>
+            <Image
+              source={require("../../assets/images/onboard-03.png")}
+              style={styles.botAvatarImage}
+            />
+          </View>
           <View
             style={[
               styles.msgBubble,
@@ -228,7 +234,7 @@ export default function JournalChatScreen() {
             multiline
           />
           <TouchableOpacity
-            style={[styles.sendBtn, !inputText.trim() && { opacity: 0.5 }]}
+            style={[styles.sendBtn, !inputText.trim() && { opacity: 100 }]}
             onPress={handleSend}
             disabled={!inputText.trim() || isTyping}
           >
@@ -265,12 +271,20 @@ const styles = StyleSheet.create({
   headerAvatarContainer: {
     position: "relative",
   },
-  headerAvatar: {
+  headerAvatarWrapper: {
     width: 44,
     height: 44,
     borderRadius: 22,
     borderWidth: 2,
     borderColor: "rgba(255,255,255,0.2)",
+    overflow: "hidden",
+    alignItems: "center",
+    justifyContent: "center",
+    backgroundColor: C.navyDeep,
+  },
+  headerAvatarImage: {
+    width: "160%",
+    height: "160%",
   },
   onlineDot: {
     position: "absolute",
@@ -310,11 +324,19 @@ const styles = StyleSheet.create({
   msgWrapperRight: {
     justifyContent: "flex-end",
   },
-  botAvatar: {
+  botAvatarWrapper: {
     width: 28,
     height: 28,
     borderRadius: 14,
     marginRight: 8,
+    overflow: "hidden",
+    alignItems: "center",
+    justifyContent: "center",
+    backgroundColor: C.navyDeep,
+  },
+  botAvatarImage: {
+    width: "160%",
+    height: "160%",
   },
   msgBubble: {
     maxWidth: "75%",
