@@ -18,25 +18,25 @@ const { width, height } = Dimensions.get("window");
 const ONBOARDING_DATA = [
   {
     id: "1",
-    title: "Shop and Earn points",
+    title: "Understand Your Mind, Effortlessly",
     description:
-      "Earn points by following a link and purchasing online or by registering your payment card and choosing in store offers.",
+      "Your emotions, change everyday. MindGuard helps you track and understand them.",
     // Nanti ganti require ini dengan path fotomu sendiri, misalnya require('../assets/images/foto1.png')
     image: require("../assets/images/asistant.png"),
   },
   {
     id: "2",
-    title: "Exchange Points for Offers",
+    title: "Your Personal AI Mental Companion",
     description:
-      "Choose to swap your points from a marketplace of offers, gift cards or products to gain real value from your shop.",
+      "We analyze your emotions and provide you with personalized insights and recommendations.",
     // Foto untuk halaman 2
     image: require("../assets/images/asistant.png"),
   },
   {
     id: "3",
-    title: "Swap your points for Bitcoin",
+    title: "Small Steps, Real Change",
     description:
-      "Exchange your points for the worlds most popular digital currency and enter the world of crypto.",
+      "Get real-time suggestions to manage stress, sleep better, and build healthier habits.",
     // Foto untuk halaman 3
     image: require("../assets/images/asistant.png"),
   },
