@@ -17,6 +17,7 @@ import { useSafeAreaInsets } from "react-native-safe-area-context";
 import Icon from "../../components/Icon";
 import { Card, Ring } from "../../components/UI";
 import { C } from "../../constants/Colors";
+import { TODAY_CHECKIN, calcRiskScore, MOOD_SCORE } from "../../constants/mockData";
 
 const { width } = Dimensions.get("window");
 
@@ -24,6 +25,11 @@ export default function HomeScreen() {
   const router = useRouter();
   const insets = useSafeAreaInsets();
   const [showNotifications, setShowNotifications] = useState(false);
+
+  // ── Derived values from today's check-in ───────────────────
+  const moodScore = Math.round((MOOD_SCORE[TODAY_CHECKIN.mood] / 10) * 100);
+  const riskScore = calcRiskScore(TODAY_CHECKIN);
+  const sleepScore = Math.round((TODAY_CHECKIN.sleep / 10) * 100);
 
   return (
     <>
@@ -102,13 +108,13 @@ export default function HomeScreen() {
               }}
             >
               <View style={{ alignItems: "center" }}>
-                <Ring value={24} color={C.mint} sub="MOOD" />
+                <Ring value={moodScore} color={C.mint} sub="MOOD" />
               </View>
               <View style={{ alignItems: "center" }}>
-                <Ring value={24} color={C.red} sub="RISK" />
+                <Ring value={riskScore} color={C.red} sub="RISK" />
               </View>
               <View style={{ alignItems: "center" }}>
-                <Ring value={24} color={C.purpleLight} sub="SLEEP" />
+                <Ring value={sleepScore} color={C.purpleLight} sub="SLEEP" />
               </View>
             </View>
           </Card>
