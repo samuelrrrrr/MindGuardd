@@ -58,7 +58,11 @@ const DAY_LABELS = [
 ];
 
 const MOOD_EMOJI: Record<string, string> = {
-  Sad: '😔', Neutral: '😐', Good: '😊', Great: '🤩', Calm: '🧘',
+  Sad: '😔', Neutral: '😐', Good: '😊', Great: '🤩', Calm: '🧘', Excellent: '🤩',
+};
+
+const NUM_TO_MOOD: Record<number, string> = {
+  1: 'Sad', 2: 'Neutral', 3: 'Calm', 4: 'Good', 5: 'Great',
 };
 
 const CHECKIN_HISTORY = LAST_14_DAYS.map((entry, i) => {
@@ -178,15 +182,18 @@ export default function TrendsScreen() {
 
         {/* HISTORY LIST */}
         {history.map((item) => {
-          const riskCat = item.stress ? computeRiskScore(item).category : (item as any).risk;
+          const isReal = item.stress !== undefined;
+          const riskCat = isReal ? computeRiskScore(item).category : (item as any).risk;
+          const displayEmoji = (item as any).moodEmoji || MOOD_EMOJI[NUM_TO_MOOD[item.mood as number]] || '😐';
+          const displayMood = isReal ? `${item.mood}/5` : `${(item as any).mood}%`;
           return (
           <Card key={item.id} style={{ marginBottom: 12, padding: 16 }}>
             <View style={styles.historyHeader}>
-              <Text style={styles.historyDate}>{item.moodEmoji} {item.date}</Text>
+              <Text style={styles.historyDate}>{displayEmoji} {item.date}</Text>
               <View style={styles.historyMetrics}>
                 <View style={styles.smallMetric}>
                   <Icon n="sparkle" s={12} c={C.mint} />
-                  <Text style={[styles.smallMetricText, { color: C.mint }]}>{item.mood}/5</Text>
+                  <Text style={[styles.smallMetricText, { color: C.mint }]}>{displayMood}</Text>
                 </View>
                 <View style={styles.smallMetric}>
                   <Icon n="moon" s={12} c={C.purple} />
