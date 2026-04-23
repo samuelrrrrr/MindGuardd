@@ -16,19 +16,19 @@ import { C } from "../../constants/Colors";
 
 export default function CheckInScreen() {
   const insets = useSafeAreaInsets();
-  const [mood, setMood] = useState("Good");
-  const [sleep, setSleep] = useState(8);
-  const [stress, setStress] = useState(3);
+  const [moodIndex, setMoodIndex] = useState(2);
+  const [sleepIndex, setSleepIndex] = useState(2);
+  const [stressIndex, setStressIndex] = useState(2);
   const [activityText, setActivityText] = useState("");
   const [done, setDone] = useState(false);
 
-  const moods = [
-    { l: "Sad", e: "😔" },
-    { l: "Neutral", e: "😐" },
-    { l: "Good", e: "😊" },
-    { l: "Great", e: "🤩" },
-    { l: "Calm", e: "🧘" },
-  ];
+  const emotes = ["face-1", "face-2", "face-3", "face-4", "face-5"];
+  const moodLabels = ["Sad", "Neutral", "Good", "Great", "Excellent"];
+  const sleepLabels = ["Poor", "Fair", "Good", "Very Good", "Excellent"];
+  const stressLabels = ["High", "Moderate", "Neutral", "Low", "Relaxed"];
+  
+  const currentMood = { l: moodLabels[moodIndex], e: emotes[moodIndex] };
+  const mood = currentMood.l;
   const acts = [
     { l: "Work", i: "insights" },
     { l: "Study", i: "brain" },
@@ -60,30 +60,32 @@ export default function CheckInScreen() {
       <View style={styles.content}>
         {/* MOOD */}
         <Card>
-          <Text style={styles.sectionLabel}>Mood</Text>
+          <View style={styles.rowBetween}>
+            <View style={styles.row}>
+              <Icon n="heart" s={17} c={C.coral} />
+              <Text style={styles.inputLabel}>Mood</Text>
+            </View>
+            <Text style={{ fontSize: 14, fontWeight: '800', color: C.coral }}>
+              {moodLabels[moodIndex]}
+            </Text>
+          </View>
           <View style={styles.moodRow}>
-            {moods.map((m) => (
+            {emotes.map((e, i) => (
               <TouchableOpacity
-                key={m.l}
+                key={`mood-${i}`}
                 style={[
                   styles.moodBtn,
-                  mood === m.l && {
-                    backgroundColor: C.purplePale,
-                    borderColor: C.purple,
+                  moodIndex === i && {
+                    backgroundColor: "rgba(255, 127, 80, 0.15)",
+                    borderColor: C.coral,
                   },
                 ]}
-                onPress={() => setMood(m.l)}
+                onPress={() => setMoodIndex(i)}
                 activeOpacity={0.75}
               >
-                <Text style={{ fontSize: 22 }}>{m.e}</Text>
-                <Text
-                  style={[
-                    styles.moodLabel,
-                    { color: mood === m.l ? C.purple : C.muted },
-                  ]}
-                >
-                  {m.l}
-                </Text>
+                <View style={{ paddingVertical: 4 }}>
+                  <Icon n={e} s={24} c={moodIndex === i ? C.coral : C.muted} />
+                </View>
               </TouchableOpacity>
             ))}
           </View>
@@ -96,23 +98,29 @@ export default function CheckInScreen() {
               <Icon n="moon" s={17} c={C.purple} />
               <Text style={styles.inputLabel}>Sleep Quality</Text>
             </View>
-            <Text style={[styles.sliderValue, { color: C.purple }]}>
-              {sleep}/10
+            <Text style={{ fontSize: 14, fontWeight: '800', color: C.purple }}>
+              {sleepLabels[sleepIndex]}
             </Text>
           </View>
-          <Slider
-            minimumValue={0}
-            maximumValue={10}
-            step={1}
-            value={sleep}
-            onValueChange={setSleep}
-            minimumTrackTintColor={C.purple}
-            maximumTrackTintColor={C.purplePale}
-            thumbTintColor={C.purple}
-          />
-          <View style={styles.rowBetween}>
-            <Text style={styles.muted}>Poor</Text>
-            <Text style={styles.muted}>Excellent</Text>
+          <View style={styles.moodRow}>
+            {emotes.map((e, i) => (
+              <TouchableOpacity
+                key={`sleep-${i}`}
+                style={[
+                  styles.moodBtn,
+                  sleepIndex === i && {
+                    backgroundColor: C.purplePale,
+                    borderColor: C.purple,
+                  },
+                ]}
+                onPress={() => setSleepIndex(i)}
+                activeOpacity={0.75}
+              >
+                <View style={{ paddingVertical: 4 }}>
+                  <Icon n={e} s={24} c={sleepIndex === i ? C.purple : C.muted} />
+                </View>
+              </TouchableOpacity>
+            ))}
           </View>
         </Card>
 
@@ -123,23 +131,29 @@ export default function CheckInScreen() {
               <Icon n="bolt" s={17} c={C.amber} />
               <Text style={styles.inputLabel}>Stress Level</Text>
             </View>
-            <Text style={[styles.sliderValue, { color: C.amber }]}>
-              {stress}/10
+            <Text style={{ fontSize: 14, fontWeight: '800', color: C.amber }}>
+              {stressLabels[stressIndex]}
             </Text>
           </View>
-          <Slider
-            minimumValue={0}
-            maximumValue={10}
-            step={1}
-            value={stress}
-            onValueChange={setStress}
-            minimumTrackTintColor={C.amber}
-            maximumTrackTintColor={C.amberLight}
-            thumbTintColor={C.amber}
-          />
-          <View style={styles.rowBetween}>
-            <Text style={styles.muted}>Relaxed</Text>
-            <Text style={styles.muted}>High Stress</Text>
+          <View style={styles.moodRow}>
+            {emotes.map((e, i) => (
+              <TouchableOpacity
+                key={`stress-${i}`}
+                style={[
+                  styles.moodBtn,
+                  stressIndex === i && {
+                    backgroundColor: C.amberLight,
+                    borderColor: C.amber,
+                  },
+                ]}
+                onPress={() => setStressIndex(i)}
+                activeOpacity={0.75}
+              >
+                <View style={{ paddingVertical: 4 }}>
+                  <Icon n={e} s={24} c={stressIndex === i ? C.amber : C.muted} />
+                </View>
+              </TouchableOpacity>
+            ))}
           </View>
         </Card>
 
@@ -177,8 +191,8 @@ export default function CheckInScreen() {
               </View>
               <Text style={styles.aiTitle}>
                 {activityText.trim().length > 0 
-                  ? `Focusing on "${activityText}" while feeling ${mood} and having a stress level of ${stress}/10 suggests you might need to ${stress > 5 ? 'take a break' : 'keep up the good work'}. Try to maintain your sleep at ${sleep} hours.` 
-                  : `With a stress level of ${stress}/10 and a ${mood} mood, consider adding an activity here next time to help me understand what's influencing your day!`}
+                  ? `Focusing on "${activityText}" while feeling ${mood} and having a ${stressLabels[stressIndex].toLowerCase()} stress level suggests you might need to ${stressIndex < 2 ? 'take a break' : 'keep up the good work'}. Your sleep quality looks like it's ${sleepLabels[sleepIndex].toLowerCase()}.` 
+                  : `With a ${stressLabels[stressIndex].toLowerCase()} stress level and a ${mood} mood, consider adding an activity here next time to help me understand what's influencing your day!`}
               </Text>
             </LinearGradient>
           </View>

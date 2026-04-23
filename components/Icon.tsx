@@ -141,6 +141,44 @@ const Icon: React.FC<IconProps> = ({ n, s = 20, c = C.sub }) => {
         <Polygon points="22 2 15 22 11 13 2 9 22 2" {...common} />
       </>
     ),
+    'face-1': (
+      <>
+        <Circle cx="12" cy="12" r="10" {...common} />
+        <Path d="M16 16s-1.5-2-4-2-4 2-4 2" {...common} />
+        <Line x1="9" y1="9" x2="9.01" y2="9" {...common} strokeWidth="3" />
+        <Line x1="15" y1="9" x2="15.01" y2="9" {...common} strokeWidth="3" />
+      </>
+    ),
+    'face-2': (
+      <>
+        <Circle cx="12" cy="12" r="10" {...common} />
+        <Line x1="8" y1="15" x2="16" y2="15" {...common} />
+        <Line x1="9" y1="9" x2="9.01" y2="9" {...common} strokeWidth="3" />
+        <Line x1="15" y1="9" x2="15.01" y2="9" {...common} strokeWidth="3" />
+      </>
+    ),
+    'face-3': (
+      <>
+        <Circle cx="12" cy="12" r="10" {...common} />
+        <Path d="M8 14s1.5 2 4 2 4-2 4-2" {...common} />
+        <Line x1="9" y1="9" x2="9.01" y2="9" {...common} strokeWidth="3" />
+        <Line x1="15" y1="9" x2="15.01" y2="9" {...common} strokeWidth="3" />
+      </>
+    ),
+    'face-4': (
+      <>
+        <Circle cx="12" cy="12" r="10" {...common} />
+        <Path d="M8 14s1.5 2 4 2 4-2 4-2" {...common} />
+        <Path d="M7 9l1.5-1.5L10 9M14 9l1.5-1.5L17 9" {...common} />
+      </>
+    ),
+    'face-5': (
+      <>
+        <Circle cx="12" cy="12" r="10" {...common} />
+        <Path d="M8 13.5c1.5 3 6.5 3 8 0" {...common} />
+        <Path d="M7 9l1.5-1.5L10 9M14 9l1.5-1.5L17 9" {...common} />
+      </>
+    ),
   };
 
   return (
