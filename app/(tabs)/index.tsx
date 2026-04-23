@@ -142,10 +142,6 @@ export default function HomeScreen() {
 
           {/* QUICK ACTIONS */}
           <View>
-            <Text style={[styles.sectionLabel, { marginBottom: 12 }]}>
-              Quick Actions
-            </Text>
-
             {/* Daily Check-in Card */}
             <TouchableOpacity
               style={styles.dailyCheckinCard}
@@ -167,72 +163,6 @@ export default function HomeScreen() {
                 </Text>
               </View>
             </TouchableOpacity>
-
-            <View style={styles.quickActions}>
-              {[
-                {
-                  label: "Log Emotion",
-                  sub: "Quick entry",
-                  icon: "heart",
-                  color: C.coral,
-                  bg: C.coralLight,
-                  screen: "/screens/emotion",
-                },
-                {
-                  label: "Insight",
-                  sub: "AI analysis",
-                  icon: "sparkle",
-                  color: C.amber,
-                  bg: C.amberLight,
-                  screen: "/screens/insights",
-                },
-              ].map((a) => (
-                <TouchableOpacity
-                  key={a.label}
-                  style={styles.quickBtn}
-                  onPress={() => router.push(a.screen as any)}
-                  activeOpacity={0.75}
-                >
-                  <View style={[styles.quickIcon, { backgroundColor: a.bg }]}>
-                    <Icon n={a.icon} s={22} c={a.color} />
-                  </View>
-                  <Text style={styles.quickLabel}>{a.label}</Text>
-                  <Text style={styles.quickSub}>{a.sub}</Text>
-                </TouchableOpacity>
-              ))}
-            </View>
-          </View>
-
-          {/* EXTRA SHORTCUTS */}
-          <View style={styles.shortcutGrid}>
-            {[
-              {
-                label: "Risk Analysis",
-                icon: "shield",
-                color: C.navy,
-                bg: "#eaecf8",
-                screen: "/screens/risk",
-              },
-              {
-                label: "Breathing",
-                icon: "wind",
-                color: "#3b82f6",
-                bg: "#eff6ff",
-                screen: "/screens/breathing",
-              },
-            ].map((a) => (
-              <TouchableOpacity
-                key={a.label}
-                style={styles.shortcutBtn}
-                onPress={() => router.push(a.screen as any)}
-                activeOpacity={0.75}
-              >
-                <View style={[styles.shortcutIcon, { backgroundColor: a.bg }]}>
-                  <Icon n={a.icon} s={18} c={a.color} />
-                </View>
-                <Text style={styles.shortcutLabel}>{a.label}</Text>
-              </TouchableOpacity>
-            ))}
           </View>
         </View>
       </ScrollView>
