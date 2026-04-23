@@ -17,7 +17,11 @@ import { useSafeAreaInsets } from "react-native-safe-area-context";
 import Icon from "../../components/Icon";
 import { Card, Ring } from "../../components/UI";
 import { C } from "../../constants/Colors";
-import { TODAY_CHECKIN, calcRiskScore, MOOD_SCORE } from "../../constants/mockData";
+import {
+  calcRiskScore,
+  MOOD_SCORE,
+  TODAY_CHECKIN,
+} from "../../constants/mockData";
 
 const { width } = Dimensions.get("window");
 
@@ -74,13 +78,13 @@ export default function HomeScreen() {
           {/* Greeting */}
           <View style={styles.greetingBox}>
             <Image
-              source={require("../../assets/images/asistant.png")}
+              source={require("../../assets/images/onboard-01.png")}
               style={{
                 position: "absolute",
-                right: -35,
-                bottom: -40,
-                width: 170,
-                height: 170,
+                right: -155,
+                bottom: -150,
+                width: 350,
+                height: 350,
                 opacity: 1,
               }}
             />
@@ -88,7 +92,7 @@ export default function HomeScreen() {
               Good Morning,{"\n"}how are you today?
             </Text>
             <Text style={styles.greetingSub}>
-              Your mental sanctuary is ready for the day.
+              Your mental sanctuary {"\n"} is ready for the day.
             </Text>
           </View>
         </LinearGradient>
@@ -137,10 +141,10 @@ export default function HomeScreen() {
             </Text>
             <TouchableOpacity
               style={styles.aiBtn}
-              onPress={() => router.push("/screens/insights")}
+              onPress={() => router.push("/(tabs)/trends")}
             >
               <Text style={[styles.aiBtnText, { color: C.purpleLight }]}>
-                View full insight
+                View Your Journey
               </Text>
               <Icon n="arrow" s={13} c={C.purpleLight} />
             </TouchableOpacity>
@@ -155,7 +159,7 @@ export default function HomeScreen() {
               activeOpacity={0.85}
             >
               <Image
-                source={require("../../assets/images/asistant.png")}
+                source={require("../../assets/images/onboard-04.png")}
                 style={styles.dailyCheckinBg}
               />
               <LinearGradient
@@ -265,7 +269,7 @@ const styles = StyleSheet.create({
   greetingBox: { paddingTop: 16 },
   greeting: { fontSize: 23, fontWeight: "800", color: "#fff", lineHeight: 30 },
   greetingSub: {
-    fontSize: 14,
+    fontSize: 12,
     color: "rgba(255, 255, 255, 1)",
     marginTop: 8,
   },
@@ -476,10 +480,12 @@ const styles = StyleSheet.create({
   },
   dailyCheckinBg: {
     position: "absolute",
-    width: "100%",
-    height: "100%",
+    width: "130%",
+    height: "130%",
     resizeMode: "cover",
-    opacity: 0.8,
+    opacity: 100,
+    right: -140,
+    bottom: -30,
   },
   dailyCheckinOverlay: {
     position: "absolute",
