@@ -2,6 +2,7 @@ import { LinearGradient } from "expo-linear-gradient";
 import { useFocusEffect } from "expo-router";
 import React, { useCallback, useState } from "react";
 import {
+  Image,
   ScrollView,
   StyleSheet,
   Text,
@@ -137,7 +138,18 @@ export default function TrendsScreen() {
         colors={[C.navyDeep, C.navy]}
         style={[styles.hero, { paddingTop: insets.top + 8 }]}
       >
-        <View style={{ paddingHorizontal: 22 }}>
+        <Image
+          source={require("../../assets/images/onboardjourney-01.png")}
+          style={styles.bgImage}
+        />
+        <View
+          style={{
+            paddingHorizontal: 22,
+            zIndex: 1,
+            elevation: 1,
+            position: "relative",
+          }}
+        >
           <Text style={styles.heroTitle}>Your Journey</Text>
           <Text style={styles.heroSub}>
             Track your mental well-being over time
@@ -343,6 +355,15 @@ export default function TrendsScreen() {
 const styles = StyleSheet.create({
   scroll: { flex: 1, backgroundColor: C.bg },
   hero: { paddingBottom: 32 },
+  bgImage: {
+    position: "absolute",
+    width: 220,
+    height: 220,
+    right: -60,
+    top: -10,
+    opacity: 0.9,
+    resizeMode: "contain",
+  },
   heroTitle: { fontSize: 28, fontWeight: "900", color: "#fff" },
   heroSub: { fontSize: 14, color: "rgba(255, 255, 255, 1)", marginTop: 6 },
   content: { padding: 16, gap: 4, marginTop: 2 },

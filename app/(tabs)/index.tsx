@@ -29,6 +29,7 @@ export default function HomeScreen() {
   const router = useRouter();
   const insets = useSafeAreaInsets();
   const [showNotifications, setShowNotifications] = useState(false);
+  const [showSidebar, setShowSidebar] = useState(false);
 
   // ── Derived values from today's check-in ───────────────────
   const moodScore = Math.round((MOOD_SCORE[TODAY_CHECKIN.mood] / 10) * 100);
@@ -51,7 +52,11 @@ export default function HomeScreen() {
         >
           {/* Top bar */}
           <View style={styles.topBar}>
-            <View style={styles.avatarRow}>
+            <TouchableOpacity
+              style={styles.avatarRow}
+              onPress={() => setShowSidebar(true)}
+              activeOpacity={0.8}
+            >
               <LinearGradient
                 colors={[C.purpleLight, C.purple]}
                 style={styles.avatar}
@@ -62,10 +67,10 @@ export default function HomeScreen() {
                 />
               </LinearGradient>
               <View>
-                <Text style={styles.welcomeText}>Welcome back</Text>
-                <Text style={styles.nameText}>Sarah ✨</Text>
+                <Text style={styles.welcomeText}>Welcome Back</Text>
+                <Text style={styles.nameText}>Talita</Text>
               </View>
-            </View>
+            </TouchableOpacity>
             <TouchableOpacity
               style={styles.bellBtn}
               onPress={() => setShowNotifications(true)}
@@ -88,6 +93,7 @@ export default function HomeScreen() {
                 opacity: 1,
               }}
               resizeMode="contain"
+              pointerEvents="none"
             />
             <View style={{ zIndex: 1, elevation: 1, position: "relative" }}>
               <Text style={styles.greeting}>
@@ -219,11 +225,121 @@ export default function HomeScreen() {
           </Pressable>
         </Pressable>
       </Modal>
+
+      {/* SIDEBAR MODAL */}
+      <Modal
+        visible={showSidebar}
+        transparent={true}
+        animationType="fade"
+        onRequestClose={() => setShowSidebar(false)}
+      >
+        <View style={styles.sidebarOverlay}>
+          <Pressable
+            style={StyleSheet.absoluteFill}
+            onPress={() => setShowSidebar(false)}
+          />
+          <View style={styles.sidebarContainer}>
+            <View style={styles.sidebarHeader}>
+              <TouchableOpacity onPress={() => setShowSidebar(false)}>
+                <Icon n="x" s={24} c={C.text} />
+              </TouchableOpacity>
+            </View>
+
+            <View style={styles.sidebarProfile}>
+              <LinearGradient
+                colors={[C.purpleLight, C.purple]}
+                style={styles.sidebarAvatar}
+              >
+                <Image
+                  source={require("../../assets/images/asistant.png")}
+                  style={styles.sidebarAvatarInner}
+                />
+              </LinearGradient>
+              <Text style={styles.sidebarUsername}>Talita</Text>
+            </View>
+
+            <TouchableOpacity style={styles.sidebarItem}>
+              <Icon n="download" s={20} c={C.text} />
+              <Text style={styles.sidebarItemText}>Export to Excel</Text>
+            </TouchableOpacity>
+
+            <View style={{ flex: 1 }} />
+
+            <TouchableOpacity
+              style={[
+                styles.sidebarItem,
+                { borderBottomWidth: 0, marginBottom: 20 },
+              ]}
+            >
+              <Icon n="log-out" s={20} c={C.coral} />
+              <Text style={[styles.sidebarItemText, { color: C.coral }]}>
+                Logout
+              </Text>
+            </TouchableOpacity>
+          </View>
+        </View>
+      </Modal>
     </>
   );
 }
 
 const styles = StyleSheet.create({
+  sidebarOverlay: {
+    flex: 1,
+    backgroundColor: "rgba(0,0,0,0.5)",
+    flexDirection: "row",
+  },
+  sidebarContainer: {
+    width: width * 0.75,
+    backgroundColor: C.bg,
+    height: "100%",
+    paddingTop: 60,
+    paddingHorizontal: 20,
+    shadowColor: "#000",
+    shadowOffset: { width: 5, height: 0 },
+    shadowOpacity: 0.1,
+    shadowRadius: 10,
+    elevation: 5,
+  },
+  sidebarHeader: {
+    marginBottom: 20,
+    alignItems: "flex-end",
+  },
+  sidebarProfile: {
+    alignItems: "center",
+    marginBottom: 40,
+  },
+  sidebarAvatar: {
+    width: 80,
+    height: 80,
+    borderRadius: 40,
+    overflow: "hidden",
+    alignItems: "center",
+    justifyContent: "center",
+    marginBottom: 12,
+  },
+  sidebarAvatarInner: {
+    width: 80,
+    height: 80,
+  },
+  sidebarUsername: {
+    fontSize: 22,
+    fontWeight: "800",
+    color: C.navy,
+  },
+  sidebarItem: {
+    flexDirection: "row",
+    alignItems: "center",
+    paddingVertical: 16,
+    borderBottomWidth: 1,
+    borderBottomColor: "rgba(0,0,0,0.05)",
+    gap: 14,
+  },
+  sidebarItemText: {
+    fontSize: 16,
+    fontWeight: "600",
+    color: C.text,
+  },
   scroll: { flex: 1, backgroundColor: C.bg },
   hero: { paddingHorizontal: 22, paddingBottom: 40 },
   content: { padding: 16, gap: 12 },
@@ -246,11 +362,12 @@ const styles = StyleSheet.create({
   },
   avatarInner: { width: 42, height: 42 },
   welcomeText: {
-    fontSize: 11,
-    color: "rgba(255,255,255,0.55)",
+    bottom: 3,
+    fontSize: 12,
+    color: "rgba(255, 255, 255, 1)",
     fontWeight: "500",
   },
-  nameText: { fontSize: 15, fontWeight: "800", color: "#fff" },
+  nameText: { fontSize: 17, fontWeight: "800", color: "#fff" },
   bellBtn: {
     width: 40,
     height: 40,
