@@ -13,6 +13,11 @@ import { useSafeAreaInsets } from "react-native-safe-area-context";
 import Icon from "../../components/Icon";
 import { Card } from "../../components/UI";
 import { C } from "../../constants/Colors";
+import { saveCheckIn, getCheckIns } from "../../utils/storage";
+import { AIInsight } from "../../types/types";
+import { generateOpenAIInsight } from "../../utils/aiEngine";
+import { computeRiskScore } from "../../utils/riskEngine";
+import { detectPatterns } from "../../utils/patternEngine";
 
 export default function CheckInScreen() {
   const insets = useSafeAreaInsets();
@@ -21,6 +26,7 @@ export default function CheckInScreen() {
   const [stress, setStress] = useState(3);
   const [activityText, setActivityText] = useState("");
   const [done, setDone] = useState(false);
+  const [aiInsight, setAiInsight] = useState<AIInsight | null>(null);
 
   const moods = [
     { l: "Sad", e: "😔" },
@@ -35,6 +41,20 @@ export default function CheckInScreen() {
     { l: "Rest", i: "leaf" },
     { l: "Exercise", i: "run" },
   ];
+
+  const handleSave = async () => {
+    const newCheckIn = await saveCheckIn({ mood, sleep, stress, act: activityText || "None" });
+    if (newCheckIn) {
+      const history = await getCheckIns();
+      const risk = computeRiskScore(newCheckIn);
+      const patterns = detectPatterns(history, []);
+      // Ganti dengan API key OpenAI kamu di file .env menggunakan nama variabel EXPO_PUBLIC_OPENAI_API_KEY
+      const apiKey = process.env.EXPO_PUBLIC_OPENAI_API_KEY || "";
+      const insight = await generateOpenAIInsight(apiKey, history, risk, patterns);
+      setAiInsight(insight);
+    }
+    setDone(true);
+  };
 
   return (
     <ScrollView
@@ -176,14 +196,21 @@ export default function CheckInScreen() {
                 <Text style={styles.aiLabel}>AI Insight</Text>
               </View>
               <Text style={styles.aiTitle}>
-                {activityText.trim().length > 0 
-                  ? `Focusing on "${activityText}" while feeling ${mood} and having a stress level of ${stress}/10 suggests you might need to ${stress > 5 ? 'take a break' : 'keep up the good work'}. Try to maintain your sleep at ${sleep} hours.` 
-                  : `With a stress level of ${stress}/10 and a ${mood} mood, consider adding an activity here next time to help me understand what's influencing your day!`}
+                {aiInsight ? `${aiInsight.condition}\n\n${aiInsight.analysis}` : 'Memproses AI Insight...'}
               </Text>
+              {aiInsight && aiInsight.recommendations.length > 0 && (
+                <View style={{ marginTop: 12 }}>
+                  {aiInsight.recommendations.map((rec, i) => (
+                    <Text key={i} style={{ color: "rgba(255,255,255,0.8)", fontSize: 13, marginBottom: 4 }}>
+                      • {rec}
+                    </Text>
+                  ))}
+                </View>
+              )}
             </LinearGradient>
           </View>
         ) : (
-          <TouchableOpacity activeOpacity={0.8} onPress={() => setDone(true)}>
+          <TouchableOpacity activeOpacity={0.8} onPress={handleSave}>
             <LinearGradient colors={[C.navy, C.purple]} style={styles.saveBtn}>
               <Text style={styles.saveBtnText}>Save Check-In</Text>
             </LinearGradient>

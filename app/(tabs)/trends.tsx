@@ -1,4 +1,8 @@
-import React, { useState } from 'react';
+import React, { useState, useCallback } from 'react';
+import { useFocusEffect } from 'expo-router';
+import { getCheckIns } from '../../utils/storage';
+import { CheckInEntry } from '../../types/types';
+import { computeRiskScore } from '../../utils/riskEngine';
 import {
   View,
   Text,
@@ -72,6 +76,23 @@ const CHECKIN_HISTORY = [
 export default function TrendsScreen() {
   const insets = useSafeAreaInsets();
   const [timeRange, setTimeRange] = useState<TimeRange>('weekly');
+  const [history, setHistory] = useState<CheckInEntry[]>([]);
+
+  useFocusEffect(
+    useCallback(() => {
+      let isActive = true;
+      const fetchCheckIns = async () => {
+        const data = await getCheckIns();
+        if (isActive) {
+          setHistory(data.length > 0 ? data : CHECKIN_HISTORY as unknown as CheckInEntry[]);
+        }
+      };
+      fetchCheckIns();
+      return () => {
+        isActive = false;
+      };
+    }, [])
+  );
   // No longer tracking a single metric, we show all three
   // const [metric, setMetric] = useState<Metric>('mood');
 
@@ -155,38 +176,44 @@ export default function TrendsScreen() {
         <Text style={styles.sectionLabel}>Daily Check-in History</Text>
 
         {/* HISTORY LIST */}
-        {CHECKIN_HISTORY.map((item) => (
+        {history.map((item) => {
+          const riskCat = item.stress ? computeRiskScore(item).category : (item as any).risk;
+          return (
           <Card key={item.id} style={{ marginBottom: 12, padding: 16 }}>
             <View style={styles.historyHeader}>
               <Text style={styles.historyDate}>{item.date}</Text>
               <View style={styles.historyMetrics}>
                 <View style={styles.smallMetric}>
                   <Icon n="sparkle" s={12} c={C.mint} />
-                  <Text style={[styles.smallMetricText, { color: C.mint }]}>{item.mood}</Text>
+                  <Text style={[styles.smallMetricText, { color: C.mint }]}>{item.mood}/5</Text>
                 </View>
                 <View style={styles.smallMetric}>
                   <Icon n="moon" s={12} c={C.purple} />
-                  <Text style={[styles.smallMetricText, { color: C.purple }]}>{item.sleep}h</Text>
+                  <Text style={[styles.smallMetricText, { color: C.purple }]}>{item.sleepHours || (item as any).sleep}h</Text>
                 </View>
               </View>
             </View>
             
-            <Text style={styles.historyNote}>{item.note}</Text>
+            <Text style={styles.historyNote}>{item.notes || (item as any).note}</Text>
             
             <View style={styles.tagsRow}>
-              {item.tags.map(t => (
+              {item.activity ? (
+                <View style={styles.tagBadge}>
+                  <Text style={styles.tagText}>{item.activity}</Text>
+                </View>
+              ) : (item as any).tags?.map((t: string) => (
                 <View key={t} style={styles.tagBadge}>
                   <Text style={styles.tagText}>{t}</Text>
                 </View>
               ))}
-              <View style={[styles.tagBadge, { backgroundColor: item.risk === 'Low' ? C.mintLight : item.risk === 'Medium' ? C.amberLight : C.coralLight }]}>
-                <Text style={[styles.tagText, { color: item.risk === 'Low' ? C.mint : item.risk === 'Medium' ? C.amber : C.coral }]}>
-                  Risk: {item.risk}
+              <View style={[styles.tagBadge, { backgroundColor: riskCat === 'Low' ? C.mintLight : riskCat === 'Medium' ? C.amberLight : C.coralLight }]}>
+                <Text style={[styles.tagText, { color: riskCat === 'Low' ? C.mint : riskCat === 'Medium' ? C.amber : C.coral }]}>
+                  Risk: {riskCat}
                 </Text>
               </View>
             </View>
           </Card>
-        ))}
+        )})}
 
       </View>
     </ScrollView>
