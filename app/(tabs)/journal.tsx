@@ -18,7 +18,7 @@ import { C } from "../../constants/Colors";
 
 // GANTI DENGAN API KEY OPENAI MILIKMU
 const OPENAI_API_KEY =
-  "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";
+  "sam ganteng";
 
 type Message = {
   id: string;
